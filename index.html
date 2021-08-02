@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>kaboom</title>
+  <meta charset="utf-8">
+  <style>
+    * {
+      margin: 0;
+    }
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+<script src="https://kaboomjs.com/lib/0.5.0/kaboom.js"></script>
+<script src="https://kaboomjs.com/lib/0.5.0/plugins/aseprite.js"></script>
+<script src="https://kaboomjs.com/lib/0.5.0/plugins/pedit.js"></script>
+<script src="https://kaboomjs.com/pub/legacy/kbmsprite.js"></script>
+
+  <script>
+
+kaboom({
+  ...{"fullscreen":true,"width":240,"height":240,"scale":1,"startScene":"main","version":"0.5.0"},
+  global: true,
+  plugins: [ peditPlugin, asepritePlugin, kbmspritePlugin ],
+});
+loadSprite("cursor0", "sprites/cursor0.png");
+loadSprite("dwarf-attack-0", "sprites/dwarf-attack-0.png");
+loadSprite("dwarf-attack-1", "sprites/dwarf-attack-1.png");
+loadSprite("dwarf-attack-2", "sprites/dwarf-attack-2.png");
+loadSprite("dwarf-attack-3", "sprites/dwarf-attack-3.png");
+loadSprite("dwarf", "sprites/dwarf.png");
+loadSprite("elf", "sprites/elf.png");
+loadSprite("land", "sprites/land.jpeg");
+loadSprite("man", "sprites/man.png");
+loadSprite("orc", "sprites/orc.png");
+loadSprite("troll", "sprites/troll.png");
+loadSound("arrow-0", "sounds/arrow-0.wav");
+loadSound("gore-0", "sounds/gore-0.wav");
+loadSound("gore-1", "sounds/gore-1.mp3");
+loadSound("gore-2", "sounds/gore-2.mp3");
+loadSound("metal-hit-0", "sounds/metal-hit-0.wav");
+loadSound("metal-hit-1", "sounds/metal-hit-1.wav");
+loadSound("metal-hit-2", "sounds/metal-hit-2.wav");
+loadSound("metal-hit-3", "sounds/metal-hit-3.wav");
+loadSound("orc-roar", "sounds/orc-roar.wav");
+loadSound("swords1", "sounds/swords1.wav");
+scene("main", (args = {}) => {
+add([
+  sprite("land")
+])
+
+add([
+  sprite("dwarf-attack-0"),
+  pos(100,100),
+  
+])
+
+let cursor = add([
+  sprite("cursor0"),
+  pos(mousePos().x,mousePos().y),
+  "cursor",
+  {
+    x:0,
+    y:0,
+    x2:0,
+    y2:0,
+  }
+]);
+cursor.action(() => {
+  cursor.pos.x = mousePos().x;
+  cursor.pos.y = mousePos().y;
+  
+})
+});
+start("main");
+
+  </script>
+</body>
+
+</html>
