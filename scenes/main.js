@@ -1,5 +1,6 @@
 add([
-  sprite("land")
+  sprite("land"),
+  scale(width() / 128, width() / 128),
 ])
 layers([
   "back",
@@ -17,7 +18,10 @@ function ang(a){
   return Math.PI/180 * a;
 }
 
+let metalHits = ["metal-hit-0","metal-hit-1","metal-hit-2","metal-hit-3"]
+let gore = ["gore0","gore1","gore2"]
 let team = "dwarves";
+let frameCount = 0;
 let cursor = add([
   sprite("cursor0"),
   layer("cursor"),
@@ -40,77 +44,171 @@ let select = add([
   pos(0, 0),
   color(rgba(1, 1, 1, 0.5)),
 ]);
-let orc = add([
-  body(),
-  sprite("orc-attack-0"),
-  pos(200, 100),
-  "orc",
-  {
+
+let unitStats = {
+  "orc": {
     health: 25,
-    rot: 0,
     damage: 5,
-    regen: 1,
-    team: 0,
-    range: 75,
+    range: 100,
     attackRange: 20,
+    rate: 25,
     armor: 15,
-    speed: 25,
-    selected: false,
-    idle: true,
-    maxDamage: 5,
-    maxHealth: 25,
-    target: null,
-    targeting: false,
-    dead: false,
-    x: 0,
-    y: 0,
+    speed: 35,
+    seq: ["orc-attack-0","orc-attack-1","orc-attack-2","orc-attack-3","orc-attack-2","orc-attack-1"],
   },
-  "unit",
-  "bad",
-  origin("center")
-]);
-let dwarf = add([
-  body(),
-  sprite("dwarf-attack-0"),
-  pos(100, 100),
-  "unit",
-  "dwarf",
-  "good",
-  "meelee",
-  {
+  "dwarf": {
     health: 35,
-    rot: 0,
-    damage: 7.5,
-    regen: 1,
-    team: 0,
-    range: 75,
+    damage: 7,
+    range: 100,
     attackRange: 20,
+    rate: 40, 
     armor: 25,
-    speed: 15,
+    speed: 25,
+    seq: ["dwarf-attack-0","dwarf-attack-1","dwarf-attack-2","dwarf-attack-3","dwarf-attack-2","dwarf-attack-1"]
+  },
+  "man": {
+    health: 30,
+    damage: 6,
+    range: 125,
+    attackRange: 25,
+    rate: 30,
+    armor: 20,
+    speed: 40,
+    seq: ["man-attack-0","man-attack-1","man-attack-2","man-attack-3","man-attack-2","man-attack-1"]
+  },
+  "elf": {
+    health: 20,
+    damage: 7,
+    range: 150,
+    attackRange: 25,
+    rate: 20,
+    armor: 5,
+    speed: 50,
+    seq: ["elf-attack-0","elf-attack-1","elf-attack-2","elf-attack-3","elf-attack-2","elf-attack-1"]
+  },
+  "elf-archer": {
+    health: 20,
+    damage: 7,
+    range: 200,
+    attackRange: 25,
+    rate: 40,
+    armor: 5,
+    speed: 50,
+    seq: ["elf-archer-0","elf-archer-1","elf-archer-2","elf-archer-3","elf-archer-4","elf-archer-5"]
+  },
+  "troll": {
+    health: 60,
+    damage: 10,
+    range: 150,
+    attackRange: 30,
+    rate: 60,
+    armor: 20,
+    speed: 30,
+    seq: ["troll-attack-0","troll-attack-1","troll-attack-2","troll-attack-3","troll-attack-2","troll-attack-1"]
+  }
+}
+function addUnit(team, race, x, y, rangeType="meelee"){
+  add([
+  layer("units"),
+  body(),
+  sprite(unitStats[race].seq[0]),
+  pos(x, y),
+  "unit",
+  race,
+  team,
+  rangeType,
+  {
+    health: unitStats[race].health,
+    rot: 0,
+    damage: unitStats[race].damage,
+    regen: 1,
+    range: unitStats[race].range,
+    attackRange: unitStats[race].attackRange,
+    armor: unitStats[race].armor,
+    speed: unitStats[race].speed,
     selected: false,
     idle: true,
-    maxDamage: 5,
-    maxHealth: 25,
+    maxHealth: unitStats[race].health,
     target: null,
     targeting: false,
     dead: false,
+    rate: unitStats[race].rate,
     x: 0,
     y: 0,
     gox: 0,
     goy: 0,
     moving: false,
+    spi: 0,
+    seq: unitStats[race].seq
   },
   origin("center")
-])
+]);
+}
+
+addUnit("good", "elf-archer", 50, 25)
+addUnit("good", "elf-archer", 70, 60)
+addUnit("good", "elf-archer", 50, 120)
+addUnit("good", "elf-archer", 50, 170)
+
+addUnit("bad", "troll", 200, 50)
+addUnit("bad", "troll", 200, 80)
+addUnit("bad", "troll", 200, 110)
+addUnit("bad", "troll", 200, 140)
 
 
-action("dwarf", (o) => {
+function runPlayable(o){
+
   o.x = o.pos.x;
   o.y = o.pos.y;
   o.rot = o.angle;
+  var targets = get("bad");
+  for(var e of targets){
+    if(dist(e.x,e.y,o.x,o.y) <= e.attackRange){
+      if(frameCount % e.rate === 0&&e.attacking){
+        play(choose(metalHits))
+        o.health -= e.damage;
+        if(o.health <= 0){
+          e.targeting = false;
+        }
+
+      }
+    }
+  }
+  if(targets.some(e => dist(o.x,o.y,e.x,e.y) <= o.range)){
+    if(!o.targeting){
+      var possible = targets.filter(e => dist(o.x,o.y,e.x,e.y) <= o.range);
+      var t = choose(possible);
+      o.target = t;
+      o.targeting = true;
+    }
+  }else{
+    o.targeting = false;
+  }
+  
+
+  if(o.targeting){
+    o.gox = o.target.x;
+    o.goy = o.target.y;
+    o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
+    o.angle = -o.rot;
+    o.moving = true;
+    if(dist(o.x,o.y,o.gox,o.goy) <= o.attackRange){
+      o.moving = false;
+      o.gox = null;
+      o.goy = null;
+      o.attacking = true;
+    }
+  }
+  if(!o.targeting && !o.selected && !o.gox && !o.goy){
+    o.moving = false;
+  }
+
   if(cursor.selected && o.x > cursor.x && o.x < cursor.x2 && o.y > cursor.y && o.y < cursor.y2){
     o.changeSprite("dwarf-selected");
+    o.idle = false;
+    o.attacking = false;
     o.selected = true;
+    o.targeting = false;
     cursor.hasSelected = true;
   }
   if(o.selected && cursor.clicked){
@@ -119,60 +217,205 @@ action("dwarf", (o) => {
     o.rot = Math.atan2(o.goy - o.y, o.gox - o.x);
     o.angle = -o.rot;
     o.moving = true;
+    o.selected = false;
+    o.changeSprite("dwarf-attack-0")
   }
   if(o.moving){
+    o.scale = 1+Math.sin(frameCount/15)/50;
     o.move(Math.cos(-o.angle) * o.speed, Math.sin(-o.angle) * o.speed);
-    if(dist(o.x,o.y,o.gox,o.goy) <= 15){
+    if(dist(o.x,o.y,o.gox,o.goy) <= o.attackRange){
       o.moving = false;
       o.gox = null;
       o.goy = null;
     }
   }
-  if(!o.selected){
-    o.changeSprite("dwarf-attack-0");
+  if(o.attacking){
+      let bad = get("bad");
+      if(bad.some(e => dist(e.x,e.y,o.x,o.y) <= o.attackRange)){
+      if(frameCount % Math.round(o.rate/o.seq.length) === 0 && !o.selected){
+        o.spi++;
+        if(o.spi >= o.seq.length){
+          o.spi = 0;
+        }
+        o.changeSprite(o.seq[o.spi])
+      }
+      }else{
+        o.attacking = false;
+        o.idle = true;
+        o.changeSprite("dwarf-attack-0")
+      }
   }
  
   
-});
 
-action("orc", (o) => {
+}
+function runAIUnit(o, targ){
   o.x = o.pos.x;
   o.y = o.pos.y;
-  /*let bad = get("bad");
-  let good = get("good");
-  //targeting system
-  if (good.some(e => dist(o.pos.x, o.pos.y, e.x, e.y) <= o.range)) {
-    o.idle = false;
-    let possible = good.filter(e => dist(o.pos.x, o.pos.y, e.x, e.y) <= o.range);
-    if(o.target){
-    if (!o.targeting || o.target.dead) {
-      o.target = choose(possible);
+  let targets = get(targ);
+  for(var e of targets){
+    if(dist(e.x,e.y,o.x,o.y) <= e.attackRange){
+      if(frameCount % e.rate === 0&&e.attacking){
+        play(choose(metalHits))
+        o.health -= e.damage;
+        if(o.health <= 0){
+          e.targeting = false;
+        }
+      }
+    }
+  }
+  if(targets.some(e => dist(o.x,o.y,e.x,e.y) <= o.range)){
+    if(!o.targeting){
+      var possible = targets.filter(e => dist(o.x,o.y,e.x,e.y) <= o.range);
+      var t = choose(possible);
+      o.target = t;
       o.targeting = true;
     }
-    }
-  } else {
-    o.idle = true;
-  }
-  if(o.target){
-  if (o.target.dead && o.targeting) {
+  }else{
     o.targeting = false;
-    o.target = null;
   }
-  }
-  //movement
-  if (o.targeting && o.target && !o.idle) {
-    let rot = Math.atan2(o.target.y - o.pos.y, o.target.x - o.pos.x);
-    o.move(Math.cos(rot) * o.speed, Math.sin(rot) * o.speed);
-  }
-  if (dist(o.pos.x, o.pos.y, o.target.x, o.target.y) <= o.attackRange) {
-    if ((time() + o.pos.x) % o.rate === 0) {
-      //play attacking sound here
-      o.target.health -= o.damage;
-      o.target.move(Math.cos(o.rot) * o.damage, Math.sin(o.rot) * o.damage);
-    }
-  }*/
 
-  
+  if(o.targeting){
+    o.gox = o.target.x;
+    o.goy = o.target.y;
+    o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
+    o.angle = -o.rot;
+    o.moving = true;
+    if(dist(o.x,o.y,o.gox,o.goy) <= o.attackRange){
+      o.moving = false;
+      o.gox = null;
+      o.goy = null;
+      o.attacking = true;
+    }
+  }
+
+  if(o.moving){
+    o.scale = 1+Math.cos(frameCount/15)/50;
+    o.move(Math.cos(-o.angle) * o.speed, Math.sin(-o.angle) * o.speed);
+    if(dist(o.x,o.y,o.gox,o.goy) <= o.attackRange){
+      o.moving = false;
+      o.gox = null;
+      o.goy = null;
+    }
+  }
+  if(o.attacking){
+      let bad = get(targ);
+      if(bad.some(e => dist(e.x,e.y,o.x,o.y) <= o.attackRange)){
+      if(frameCount % Math.round(o.rate/o.seq.length) === 0 && !o.selected){
+        o.spi++;
+        if(o.spi >= o.seq.length){
+          o.spi = 0;
+        }
+        o.changeSprite(o.seq[o.spi])
+      }
+      }else{
+        o.attacking = false;
+        o.idle = true;
+        o.changeSprite(o.seq[0])
+      }
+  }
+}
+function runLongRangeAI(o, targ, ar){
+  o.x = o.pos.x;
+  o.y = o.pos.y;
+  let targets = get(targ);
+  for(var e of targets){
+    if(dist(e.x,e.y,o.x,o.y) <= e.attackRange){
+      if(frameCount % e.rate === 0&&e.attacking){
+        play(choose(metalHits))
+        o.health -= e.damage;
+        if(o.health <= 0){
+          e.targeting = false;
+        }
+      }
+    }
+  }
+  if(targets.some(e => dist(o.x,o.y,e.x,e.y) <= o.range)){
+    if(!o.targeting){
+      var possible = targets.filter(e => dist(o.x,o.y,e.x,e.y) <= o.range);
+      var t = choose(possible);
+      o.target = t;
+      o.targeting = true;
+    }
+  }else{
+    o.targeting = false;
+  }
+
+  if(o.targeting){
+    o.gox = o.target.x;
+    o.goy = o.target.y;
+    o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
+    o.angle = -o.rot;
+    o.moving = true;
+    if(dist(o.x,o.y,o.gox,o.goy) <= o.range){
+      o.moving = false;
+      o.gox = null;
+      o.goy = null;
+      o.attacking = true;
+    }
+  }
+
+  if(o.moving){
+    o.scale = 1+Math.cos(frameCount/15)/50;
+    o.move(Math.cos(-o.angle) * o.speed, Math.sin(-o.angle) * o.speed);
+    if(dist(o.x,o.y,o.gox,o.goy) <= o.attackRange){
+      o.moving = false;
+      o.gox = null;
+      o.goy = null;
+    }
+  }
+  if(o.attacking){
+      let bad = get(targ);
+      if(bad.some(e => dist(e.x,e.y,o.x,o.y) <= o.range)){
+        if(frameCount % o.rate === 0){
+          add([
+            sprite("arrow"),
+            pos(o.x + (Math.cos(o.rot) * 20), o.y + (Math.sin(o.rot) * 20)),
+            layer("units"),
+            ar,
+            "arrow",
+            {
+              rot: o.rot
+            }
+          ])
+        }
+      if(frameCount % Math.round(o.rate/o.seq.length) === 0 && !o.selected){
+        o.spi++;
+        if(o.spi >= o.seq.length){
+          o.spi = 0;
+        }
+        o.changeSprite(o.seq[o.spi])
+      }
+      }else{
+        o.attacking = false;
+        o.idle = true;
+        o.changeSprite(o.seq[0])
+      }
+  }
+}
+
+action("dwarf", runPlayable);
+action("man", o => runAIUnit(o, "bad"))
+action("elf", o => runAIUnit(o, "bad"))
+action("elf-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+action("orc", o => runAIUnit(o, "good"));
+action("troll", o => runAIUnit(o, "good"));
+
+action("gore", (o) => {
+  wait(25, () => destroy(o));
+})
+
+action("arrow", (o) => {
+  o.angle = -o.rot;
+  o.move(Math.cos(o.rot) * 200, Math.sin(o.rot) * 200);
+})
+collides("arrow1", "bad", (a, u) => {
+  u.health -= 7;
+  destroy(a);
+})
+collides("arrow2", "good", (a, u) => {
+  u.health -= 7;
+  destroy(a);
 })
 
 
@@ -190,7 +433,8 @@ cursor.action(() => {
   if (mouseIsReleased() && cursor.hasStarted) {
     if (cursor.x2 !== cursor.x && cursor.y !== cursor.y2) {
       cursor.selected = true;
-    } else {
+    } 
+    if(cursor.x2 === cursor.x && cursor.y === cursor.y2) {
       cursor.clicked = true;
     }
     cursor.hasStarted = false;
@@ -202,6 +446,7 @@ cursor.action(() => {
   }
 });
 action(() => {
+  frameCount++;
   if (mouseIsDown() && cursor.hasStarted) {
     select.pos.x = cursor.x;
     select.pos.y = cursor.y;
@@ -237,3 +482,31 @@ action(() => {
   cursor.selected = false;
   cursor.clicked = false;
 })
+action("unit", (unit) => {
+  let __u = get("unit");
+  for(var e of __u){
+    if(dist(e.x,e.y,unit.x,unit.y) <= 15 && e !== unit){
+      let ang = Math.atan2(e.y-unit.y,e.x-unit.x);
+      let distBetween = dist(e.x,e.y,unit.x,unit.y)-15;
+      e.move(-Math.cos(ang)*distBetween,-Math.sin(ang)*distBetween)
+    }
+  }
+  if(unit.health <= 0){
+    add([
+      sprite(choose(gore)),
+      "gore",
+      pos(unit.x,unit.y),
+      scale(2),
+      origin("center"),
+      layer("back")
+    ])
+    destroy(unit);
+  }
+})
+on("destroy", "unit", (e) => {
+    play("gore-0", {
+      volume: 2.0,
+      speed: 0.8,
+      detune: 1200
+    });
+});
