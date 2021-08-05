@@ -10,6 +10,7 @@ layers([
   "cursor",
 ], "obj");
 gravity(0);
+volume(0.1)
 
 function dist(x, y, x2, y2) {
   return Math.sqrt(Math.abs(x2 - x) ** 2 + Math.abs(y2 - y) ** 2);
@@ -96,14 +97,34 @@ let unitStats = {
     speed: 50,
     seq: ["elf-archer-0","elf-archer-1","elf-archer-2","elf-archer-3","elf-archer-4","elf-archer-5"]
   },
+  "man-archer": {
+    health: 35,
+    damage: 7,
+    range: 200,
+    attackRange: 25,
+    rate: 50,
+    armor: 25,
+    speed: 40,
+    seq: ["man-archer-0","man-archer-1","man-archer-2","man-archer-3","man-archer-4","man-archer-5"]
+  },
+  "orc-archer": {
+    health: 30,
+    damage: 7,
+    range: 200,
+    attackRange: 25,
+    rate: 50,
+    armor: 35,
+    speed: 40,
+    seq: ["orc-archer-0","orc-archer-1","orc-archer-2","orc-archer-3","orc-archer-4"]
+  },
   "troll": {
-    health: 60,
+    health: 80,
     damage: 10,
-    range: 150,
+    range: 200,
     attackRange: 30,
     rate: 60,
     armor: 20,
-    speed: 30,
+    speed: 40,
     seq: ["troll-attack-0","troll-attack-1","troll-attack-2","troll-attack-3","troll-attack-2","troll-attack-1"]
   }
 }
@@ -145,13 +166,13 @@ function addUnit(team, race, x, y, rangeType="meelee"){
 ]);
 }
 
-addUnit("good", "elf-archer", 50, 25)
-addUnit("good", "elf-archer", 70, 60)
+addUnit("good", "man-archer", 50, 25)
+addUnit("good", "man-archer", 70, 60)
 addUnit("good", "elf-archer", 50, 120)
 addUnit("good", "elf-archer", 50, 170)
 
-addUnit("bad", "troll", 200, 50)
-addUnit("bad", "troll", 200, 80)
+addUnit("bad", "orc-archer", 200, 50)
+addUnit("bad", "orc-archer", 200, 80)
 addUnit("bad", "troll", 200, 110)
 addUnit("bad", "troll", 200, 140)
 
@@ -166,7 +187,7 @@ function runPlayable(o){
     if(dist(e.x,e.y,o.x,o.y) <= e.attackRange){
       if(frameCount % e.rate === 0&&e.attacking){
         play(choose(metalHits))
-        o.health -= e.damage;
+        o.health -= e.damage*(1-(e.armor/100));
         if(o.health <= 0){
           e.targeting = false;
         }
@@ -257,7 +278,7 @@ function runAIUnit(o, targ){
     if(dist(e.x,e.y,o.x,o.y) <= e.attackRange){
       if(frameCount % e.rate === 0&&e.attacking){
         play(choose(metalHits))
-        o.health -= e.damage;
+        o.health -= e.damage*(1-(e.armor/100));
         if(o.health <= 0){
           e.targeting = false;
         }
@@ -323,7 +344,7 @@ function runLongRangeAI(o, targ, ar){
     if(dist(e.x,e.y,o.x,o.y) <= e.attackRange){
       if(frameCount % e.rate === 0&&e.attacking){
         play(choose(metalHits))
-        o.health -= e.damage;
+        o.health -= e.damage*(1-(e.armor/100));
         if(o.health <= 0){
           e.targeting = false;
         }
@@ -368,6 +389,11 @@ function runLongRangeAI(o, targ, ar){
       let bad = get(targ);
       if(bad.some(e => dist(e.x,e.y,o.x,o.y) <= o.range)){
         if(frameCount % o.rate === 0){
+          play("arrow-0")
+          var possible = targets.filter(e => dist(o.x,o.y,e.x,e.y) <= o.range);
+          var t = choose(possible);
+          o.target = t;
+          o.targeting = true;
           add([
             sprite("arrow"),
             pos(o.x + (Math.cos(o.rot) * 20), o.y + (Math.sin(o.rot) * 20)),
@@ -398,6 +424,8 @@ action("dwarf", runPlayable);
 action("man", o => runAIUnit(o, "bad"))
 action("elf", o => runAIUnit(o, "bad"))
 action("elf-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+action("orc-archer", o => runLongRangeAI(o, "good", "arrow2"))
 action("orc", o => runAIUnit(o, "good"));
 action("troll", o => runAIUnit(o, "good"));
 
