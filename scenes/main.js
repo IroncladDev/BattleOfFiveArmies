@@ -293,9 +293,10 @@ scene("main", (args = {}) => {
         o.target = t;
         o.targeting = true;
       }
-    } else {
-      o.targeting = false;
+    } else{
+      o.moving = false;
     }
+
 
     if (o.targeting) {
       o.gox = o.target.x;
@@ -309,7 +310,7 @@ scene("main", (args = {}) => {
         o.goy = null;
         o.attacking = true;
       }
-    }
+    } 
 
     if (o.moving) {
       o.scale = 1 + Math.cos(frameCount / 15) / 50;
