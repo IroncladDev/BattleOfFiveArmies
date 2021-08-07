@@ -198,7 +198,8 @@ scene("main", (args = {}) => {
           goy: 0,
           moving: false,
           spi: 0,
-          seq: unitStats[race].seq
+          seq: unitStats[race].seq,
+          onTask: false
         },
         origin("center")
       ]);
@@ -222,6 +223,8 @@ scene("main", (args = {}) => {
           }
         }
       }
+
+
       if (targets.some(e => dist(o.x, o.y, e.x, e.y) <= o.range)) {
         if (!o.targeting) {
           var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
@@ -230,11 +233,12 @@ scene("main", (args = {}) => {
           o.targeting = true;
         }
       } else {
-        if (frameCount % 100 === 0) {
+        if (frameCount % 100 === 0 && !o.onTask) {
           o.target = { x: o.x + rand(-100, 100), y: o.y + rand(-100, 100) };
           o.targeting = true;
         }
       }
+    
 
 
       if (o.targeting) {
@@ -250,9 +254,7 @@ scene("main", (args = {}) => {
           o.attacking = true;
         }
       }
-      if (!o.targeting && !o.selected && !o.gox && !o.goy) {
-        o.moving = false;
-      }
+      
 
       if (cursor.selected && o.x > cursor.x && o.x < cursor.x2 && o.y > cursor.y && o.y < cursor.y2) {
         o.changeSprite("dwarf-selected");
@@ -268,6 +270,7 @@ scene("main", (args = {}) => {
         o.rot = Math.atan2(o.goy - o.y, o.gox - o.x);
         o.angle = -o.rot;
         o.moving = true;
+        o.onTask = true;
         o.selected = false;
         o.changeSprite("dwarf-attack-0")
       }
@@ -278,6 +281,7 @@ scene("main", (args = {}) => {
           o.moving = false;
           o.gox = null;
           o.goy = null;
+          o.onTask = false;
         }
       }
       if (o.attacking) {
