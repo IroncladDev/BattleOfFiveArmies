@@ -484,9 +484,9 @@ scene("main", (args = {}) => {
   {
     addUnit("good", "dwarf", 50, 25)
     addUnit("good", "dwarf", 70, 60)
-    addUnit("good", "dwarf", 90, 60)
-    addUnit("good", "elf", 50, 120)
-    addUnit("good", "elf-archer", 50, 170)
+    addUnit("good", "elf", 90, 60)
+    addUnit("good", "elf-archer", 50, 120)
+    addUnit("good", "man", 50, 170)
 
     addUnit("bad", "orc", 300, 50)
     addUnit("bad", "orc-archer", 300, 80)
