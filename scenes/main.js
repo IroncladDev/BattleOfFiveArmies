@@ -200,6 +200,13 @@ scene("main", (args = {}) => {
     scale(3),
     origin("center")
   ]);
+  let pauseButton = add([
+    sprite("icon-pause"),
+    pos(width() - 240, height() - 75),
+    layer("ui"),
+    scale(5),
+    origin("center")
+  ]);
   //functions
   {
     function dist(x, y, x2, y2) {
