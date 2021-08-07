@@ -204,7 +204,10 @@ scene("main", (args = {}) => {
         o.targeting = true;
       }
     } else {
-      o.targeting = false;
+      if(frameCount % 100 === 0){
+        o.target = {x: o.x + rand(-100, 100), y: o.y + rand(-100, 100)};
+        o.targeting = true;
+      }
     }
 
 
@@ -294,7 +297,10 @@ scene("main", (args = {}) => {
         o.targeting = true;
       }
     } else{
-      o.moving = false;
+      if(frameCount % 100 === 0){
+        o.target = {x: o.x + rand(-100, 100), y: o.y + rand(-100, 100)};
+        o.targeting = true;
+      }
     }
 
 
@@ -361,7 +367,10 @@ scene("main", (args = {}) => {
         o.targeting = true;
       }
     } else {
-      o.targeting = false;
+      if(frameCount % 100 === 0){
+        o.target = {x: o.x + rand(-100, 100), y: o.y + rand(-100, 100)};
+        o.targeting = true;
+      }
     }
 
     if (o.targeting) {
@@ -370,7 +379,7 @@ scene("main", (args = {}) => {
       o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
       o.angle = -o.rot;
       o.moving = true;
-      if (dist(o.x, o.y, o.gox, o.goy) <= o.range) {
+      if (dist(o.x, o.y, o.gox, o.goy) <= o.range-50) {
         o.moving = false;
         o.gox = null;
         o.goy = null;
