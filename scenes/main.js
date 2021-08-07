@@ -13,6 +13,7 @@ scene("main", (args = {}) => {
       "select",
       "cursor",
     ], "obj");
+    camIgnore(["ui"])
     gravity(0);
     volume(0.1)
 
@@ -530,6 +531,12 @@ scene("main", (args = {}) => {
       destroy(a);
     })
 
+    add([
+      sprite("ui-dashboard"),
+      scale(width()/128, 100/16),
+      pos(0,height()-100),
+      layer("ui")
+    ])
 
     cursor.action(() => {
       cursor.pos.x = mousePos().x;
@@ -563,6 +570,10 @@ scene("main", (args = {}) => {
       if (keyIsDown("down")) camY += 5;
       if (keyIsDown("left")) camX -= 5;
       if (keyIsDown("right")) camX += 5;
+      if(camX < width()/2)camX = width()/2;
+      if(camY< height()/2)camY = height()/2;
+      if(camX > 2000-width()/2)camX = 2000-width()/2;
+      if(camY > 1100-height()/2)camY = 1100-height()/2;
       camPos(camX, camY);
       frameCount++;
       if (mouseIsDown() && cursor.hasStarted) {
