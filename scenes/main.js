@@ -4,7 +4,7 @@ scene("main", (args = {}) => {
   {
     add([
       sprite("land"),
-      scale(width() / 128, width() / 128),
+      scale(5),
     ])
     layers([
       "back",
@@ -18,29 +18,29 @@ scene("main", (args = {}) => {
 
 
     add([
-      rect(width(), 10),
+      rect(2000, 10),
       pos(0, 0),
       solid(),
       color(rgba(0, 0, 0)),
       layer("units")
     ])
     add([
-      rect(width(), 10),
-      pos(0, height() - 10),
+      rect(2000, 10),
+      pos(0, 1000 - 10),
       solid(),
       color(rgba(0, 0, 0)),
       layer("units")
     ])
     add([
-      rect(10, height()),
+      rect(10, 1000),
       pos(0, 0),
       solid(),
       color(rgba(0, 0, 0)),
       layer("units")
     ])
     add([
-      rect(10, height()),
-      pos(width() - 10, 0),
+      rect(10, 1000),
+      pos(2000 - 10, 0),
       solid(),
       color(rgba(0, 0, 0)),
       layer("units")
@@ -156,6 +156,7 @@ scene("main", (args = {}) => {
       seq: ["troll-attack-0", "troll-attack-1", "troll-attack-2", "troll-attack-3", "troll-attack-2", "troll-attack-1"]
     }
   }
+  let camX = 0, camY = 0;
 
   //functions
   {
@@ -534,7 +535,13 @@ scene("main", (args = {}) => {
         cursor.changeSprite("cursor0");
       }
     });
+    
     action(() => {
+      if(keyIsDown("up"))camY-=5;
+      if(keyIsDown("down"))camY+=5;
+      if(keyIsDown("left"))camX-=5;
+      if(keyIsDown("right"))camX+=5;
+      camPos(camX, camY);
       frameCount++;
       if (mouseIsDown() && cursor.hasStarted) {
         select.pos.x = cursor.x;
@@ -600,5 +607,5 @@ scene("main", (args = {}) => {
       });
     });
   }
-  
+
 });
