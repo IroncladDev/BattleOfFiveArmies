@@ -86,11 +86,11 @@ scene("main", (args = {}) => {
       seq: ["orc-attack-0", "orc-attack-1", "orc-attack-2", "orc-attack-3", "orc-attack-2", "orc-attack-1"],
     },
     "dwarf": {
-      health: 35,
+      health: 40,
       damage: 7,
       range: 100,
       attackRange: 20,
-      rate: 40,
+      rate: 35,
       armor: 25,
       speed: 25,
       seq: ["dwarf-attack-0", "dwarf-attack-1", "dwarf-attack-2", "dwarf-attack-3", "dwarf-attack-2", "dwarf-attack-1"],
@@ -230,22 +230,25 @@ scene("main", (args = {}) => {
         }
       }
 
-      if(!o.onTask&&!o.selected){
-      if (targets.some(e => dist(o.x, o.y, e.x, e.y) <= o.range)) {
-        if (!o.targeting) {
-          var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
-          var t = choose(possible);
-          o.target = t;
-          o.targeting = true;
-        }
-      } else {
-        if (frameCount % 100 === 0 && !o.onTask) {
-          o.target = { x: o.x + rand(-100, 100), y: o.y + rand(-100, 100) };
-          o.targeting = true;
+      if (!o.onTask && !o.selected) {
+        if (targets.some(e => dist(o.x, o.y, e.x, e.y) <= o.range)) {
+          if (!o.targeting) {
+            var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
+            var t = choose(possible);
+            o.target = t;
+            o.targeting = true;
+          }
+        } else {
+          if (frameCount % 100 === 0 && !o.onTask) {
+            o.target = { x: o.x + rand(-100, 100), y: o.y + rand(-100, 100) };
+            //o.targeting = true;
+            o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
+            o.angle = -o.rot;
+            o.moving = true;
+          }
         }
       }
-    }
-    
+
 
 
       if (o.targeting) {
@@ -261,7 +264,7 @@ scene("main", (args = {}) => {
           o.attacking = true;
         }
       }
-      
+
 
       if (cursor.selected && o.x > cursor.x && o.x < cursor.x2 && o.y > cursor.y && o.y < cursor.y2) {
         o.changeSprite(o.sel);
@@ -269,6 +272,7 @@ scene("main", (args = {}) => {
         o.attacking = false;
         o.selected = true;
         o.targeting = false;
+        o.target = null;
         o.moving = false;
         cursor.hasSelected = true;
       }
@@ -337,7 +341,10 @@ scene("main", (args = {}) => {
       } else {
         if (frameCount % 100 === 0) {
           o.target = { x: o.x + rand(-100, 100), y: o.y + rand(-100, 100) };
-          o.targeting = true;
+          o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
+          o.angle = -o.rot;
+          o.moving = true;
+          //o.targeting = true;
         }
       }
 
@@ -348,7 +355,7 @@ scene("main", (args = {}) => {
         o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
         o.angle = -o.rot;
         o.moving = true;
-        if (dist(o.x, o.y, o.gox, o.goy) <= o.attackRange) {
+        if (dist(o.x, o.y, o.gox, o.goy) <= o.attackRange&&o.targeting) {
           o.moving = false;
           o.gox = null;
           o.goy = null;
@@ -516,8 +523,10 @@ scene("main", (args = {}) => {
     })
     collides("arrow2", "good", (a, u) => {
       u.health -= 7;
-      u.target = { x: a.fromX, y: a.fromY };
-      u.targeting = true;
+      if (!u.selected) {
+        u.target = { x: a.fromX, y: a.fromY };
+        u.targeting = true;
+      }
       destroy(a);
     })
 
@@ -548,12 +557,12 @@ scene("main", (args = {}) => {
         cursor.changeSprite("cursor0");
       }
     });
-    
+
     action(() => {
-      if(keyIsDown("up"))camY-=5;
-      if(keyIsDown("down"))camY+=5;
-      if(keyIsDown("left"))camX-=5;
-      if(keyIsDown("right"))camX+=5;
+      if (keyIsDown("up")) camY -= 5;
+      if (keyIsDown("down")) camY += 5;
+      if (keyIsDown("left")) camX -= 5;
+      if (keyIsDown("right")) camX += 5;
       camPos(camX, camY);
       frameCount++;
       if (mouseIsDown() && cursor.hasStarted) {
