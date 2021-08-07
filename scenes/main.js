@@ -9,8 +9,8 @@ scene("main", (args = {}) => {
     layers([
       "back",
       "units",
-      "ui",
       "select",
+      "ui",
       "cursor",
     ], "obj");
     camIgnore(["ui"])
@@ -46,6 +46,15 @@ scene("main", (args = {}) => {
       color(rgba(0, 0, 0)),
       layer("units")
     ])
+
+    add([
+      sprite("ui-dashboard"),
+      scale(width() / 128, 150 / 16),
+      pos(0, height() - 150),
+      layer("ui")
+    ])
+
+
   }
 
   //vars
@@ -163,7 +172,34 @@ scene("main", (args = {}) => {
     }
   }
   let camX = 0, camY = 0;
-
+  let upButton = add([
+    sprite("icon-up"),
+    pos(width() - 100, height() - 125),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ]);
+  let downButton = add([
+    sprite("icon-down"),
+    pos(width() - 100, height() - 25),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ]);
+  let leftButton = add([
+    sprite("icon-left"),
+    pos(width() - 150, height() - 75),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ]);
+  let rightButton = add([
+    sprite("icon-right"),
+    pos(width() - 50, height() - 75),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ]);
   //functions
   {
     function dist(x, y, x2, y2) {
@@ -356,7 +392,7 @@ scene("main", (args = {}) => {
         o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
         o.angle = -o.rot;
         o.moving = true;
-        if (dist(o.x, o.y, o.gox, o.goy) <= o.attackRange&&o.targeting) {
+        if (dist(o.x, o.y, o.gox, o.goy) <= o.attackRange && o.targeting) {
           o.moving = false;
           o.gox = null;
           o.goy = null;
@@ -531,12 +567,7 @@ scene("main", (args = {}) => {
       destroy(a);
     })
 
-    add([
-      sprite("ui-dashboard"),
-      scale(width()/128, 100/16),
-      pos(0,height()-100),
-      layer("ui")
-    ])
+
 
     cursor.action(() => {
       cursor.pos.x = mousePos().x;
@@ -566,14 +597,16 @@ scene("main", (args = {}) => {
     });
 
     action(() => {
-      if (keyIsDown("up")) camY -= 5;
-      if (keyIsDown("down")) camY += 5;
-      if (keyIsDown("left")) camX -= 5;
-      if (keyIsDown("right")) camX += 5;
-      if(camX < width()/2)camX = width()/2;
-      if(camY< height()/2)camY = height()/2;
-      if(camX > 2000-width()/2)camX = 2000-width()/2;
-      if(camY > 1100-height()/2)camY = 1100-height()/2;
+      if (keyIsDown("up")||(upButton.isHovered()&&mouseIsDown())) camY -= 5;
+      if (keyIsDown("down")||(downButton.isHovered()&&mouseIsDown())) camY += 5;
+      if (keyIsDown("left")||(leftButton.isHovered()&&mouseIsDown())) camX -= 5;
+      if (keyIsDown("right")||(rightButton.isHovered()&&mouseIsDown())) camX += 5;
+      if (camX < width() / 2) camX = width() / 2;
+      if (camY < height() / 2) camY = height() / 2;
+      if (camX > 2000 - width() / 2) camX = 2000 - width() / 2;
+      if (camY > 1150 - height() / 2) camY = 1150 - height() / 2;
+
+
       camPos(camX, camY);
       frameCount++;
       if (mouseIsDown() && cursor.hasStarted) {
