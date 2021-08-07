@@ -13,6 +13,31 @@ scene("main", (args = {}) => {
   gravity(0);
   volume(0.1)
 
+  add([
+    rect(width(), 10),
+    pos(0,0),
+    solid(),
+    color(rgba(0,0,0))
+  ])
+  add([
+    rect(width(), 10),
+    pos(0,height()-10),
+    solid(),
+    color(rgba(0,0,0))
+  ])
+  add([
+    rect(10, height()),
+    pos(0,0),
+    solid(),
+    color(rgba(0,0,0))
+  ])
+  add([
+    rect(10, height()),
+    pos(width()-10,0),
+    solid(),
+    color(rgba(0,0,0))
+  ])
+
   function dist(x, y, x2, y2) {
     return Math.sqrt(Math.abs(x2 - x) ** 2 + Math.abs(y2 - y) ** 2);
   }
@@ -412,7 +437,9 @@ scene("main", (args = {}) => {
             ar,
             "arrow",
             {
-              rot: o.rot
+              rot: o.rot,
+              fromX: o.x,
+              fromY: o.y
             }
           ])
         }
@@ -450,10 +477,14 @@ scene("main", (args = {}) => {
   })
   collides("arrow1", "bad", (a, u) => {
     u.health -= 7;
+    u.target = {x: a.fromX, y: a.fromY};
+    u.targeting = true;
     destroy(a);
   })
   collides("arrow2", "good", (a, u) => {
     u.health -= 7;
+    u.target = {x: a.fromX, y: a.fromY};
+    u.targeting = true;
     destroy(a);
   })
 
