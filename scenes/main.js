@@ -17,25 +17,29 @@ scene("main", (args = {}) => {
     rect(width(), 10),
     pos(0,0),
     solid(),
-    color(rgba(0,0,0))
+    color(rgba(0,0,0)),
+    layer("units")
   ])
   add([
     rect(width(), 10),
     pos(0,height()-10),
     solid(),
-    color(rgba(0,0,0))
+    color(rgba(0,0,0)),
+    layer("units")
   ])
   add([
     rect(10, height()),
     pos(0,0),
     solid(),
-    color(rgba(0,0,0))
+    color(rgba(0,0,0)),
+    layer("units")
   ])
   add([
     rect(10, height()),
     pos(width()-10,0),
     solid(),
-    color(rgba(0,0,0))
+    color(rgba(0,0,0)),
+    layer("units")
   ])
 
   function dist(x, y, x2, y2) {
