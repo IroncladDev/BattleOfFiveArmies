@@ -93,7 +93,8 @@ scene("main", (args = {}) => {
       rate: 40,
       armor: 25,
       speed: 25,
-      seq: ["dwarf-attack-0", "dwarf-attack-1", "dwarf-attack-2", "dwarf-attack-3", "dwarf-attack-2", "dwarf-attack-1"]
+      seq: ["dwarf-attack-0", "dwarf-attack-1", "dwarf-attack-2", "dwarf-attack-3", "dwarf-attack-2", "dwarf-attack-1"],
+      sel: "dwarf-selected"
     },
     "man": {
       health: 30,
@@ -103,7 +104,8 @@ scene("main", (args = {}) => {
       rate: 30,
       armor: 20,
       speed: 40,
-      seq: ["man-attack-0", "man-attack-1", "man-attack-2", "man-attack-3", "man-attack-2", "man-attack-1"]
+      seq: ["man-attack-0", "man-attack-1", "man-attack-2", "man-attack-3", "man-attack-2", "man-attack-1"],
+      sel: "man-selected"
     },
     "elf": {
       health: 20,
@@ -113,7 +115,8 @@ scene("main", (args = {}) => {
       rate: 20,
       armor: 5,
       speed: 50,
-      seq: ["elf-attack-0", "elf-attack-1", "elf-attack-2", "elf-attack-3", "elf-attack-2", "elf-attack-1"]
+      seq: ["elf-attack-0", "elf-attack-1", "elf-attack-2", "elf-attack-3", "elf-attack-2", "elf-attack-1"],
+      sel: "elf-selected"
     },
     "elf-archer": {
       health: 20,
@@ -123,7 +126,8 @@ scene("main", (args = {}) => {
       rate: 40,
       armor: 5,
       speed: 50,
-      seq: ["elf-archer-0", "elf-archer-1", "elf-archer-2", "elf-archer-3", "elf-archer-4", "elf-archer-5"]
+      seq: ["elf-archer-0", "elf-archer-1", "elf-archer-2", "elf-archer-3", "elf-archer-4", "elf-archer-5"],
+      sel: "elf-archer-selected"
     },
     "man-archer": {
       health: 35,
@@ -133,7 +137,8 @@ scene("main", (args = {}) => {
       rate: 50,
       armor: 25,
       speed: 40,
-      seq: ["man-archer-0", "man-archer-1", "man-archer-2", "man-archer-3", "man-archer-4", "man-archer-5"]
+      seq: ["man-archer-0", "man-archer-1", "man-archer-2", "man-archer-3", "man-archer-4", "man-archer-5"],
+      sel: "man-archer-selected"
     },
     "orc-archer": {
       health: 30,
@@ -199,7 +204,8 @@ scene("main", (args = {}) => {
           moving: false,
           spi: 0,
           seq: unitStats[race].seq,
-          onTask: false
+          onTask: false,
+          sel: unitStats[race].sel
         },
         origin("center")
       ]);
@@ -224,7 +230,7 @@ scene("main", (args = {}) => {
         }
       }
 
-
+      if(!o.onTask&&!o.selected){
       if (targets.some(e => dist(o.x, o.y, e.x, e.y) <= o.range)) {
         if (!o.targeting) {
           var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
@@ -238,6 +244,7 @@ scene("main", (args = {}) => {
           o.targeting = true;
         }
       }
+    }
     
 
 
@@ -257,11 +264,12 @@ scene("main", (args = {}) => {
       
 
       if (cursor.selected && o.x > cursor.x && o.x < cursor.x2 && o.y > cursor.y && o.y < cursor.y2) {
-        o.changeSprite("dwarf-selected");
+        o.changeSprite(o.sel);
         o.idle = false;
         o.attacking = false;
         o.selected = true;
         o.targeting = false;
+        o.moving = false;
         cursor.hasSelected = true;
       }
       if (o.selected && cursor.clicked) {
@@ -272,7 +280,7 @@ scene("main", (args = {}) => {
         o.moving = true;
         o.onTask = true;
         o.selected = false;
-        o.changeSprite("dwarf-attack-0")
+        o.changeSprite(o.seq[0])
       }
       if (o.moving) {
         o.scale = 1 + Math.sin(frameCount / 15) / 50;
@@ -297,7 +305,7 @@ scene("main", (args = {}) => {
         } else {
           o.attacking = false;
           o.idle = true;
-          o.changeSprite("dwarf-attack-0")
+          o.changeSprite(o.seq[0])
         }
       }
 
@@ -467,8 +475,9 @@ scene("main", (args = {}) => {
 
   //add some test units
   {
-    addUnit("good", "man-archer", 50, 25)
+    addUnit("good", "dwarf", 50, 25)
     addUnit("good", "dwarf", 70, 60)
+    addUnit("good", "dwarf", 90, 60)
     addUnit("good", "elf", 50, 120)
     addUnit("good", "elf-archer", 50, 170)
 
