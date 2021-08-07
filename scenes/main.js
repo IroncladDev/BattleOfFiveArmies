@@ -171,6 +171,7 @@ scene("main", (args = {}) => {
       seq: ["troll-attack-0", "troll-attack-1", "troll-attack-2", "troll-attack-3", "troll-attack-2", "troll-attack-1"]
     }
   }
+  let gamePaused = false;
   let camX = 0, camY = 0;
   let upButton = add([
     sprite("icon-up"),
@@ -679,6 +680,19 @@ scene("main", (args = {}) => {
         detune: 1200
       });
     });
+    pauseButton.clicks(() => {
+      if(gamePaused){
+        gamePaused = false;
+        every("unit", (u) => {
+          u.paused = false;
+        })
+      }else{
+        gamePaused = true;
+        every("unit", (u) => {
+          u.paused = true;
+        })
+      }
+    })
   }
 
 });
