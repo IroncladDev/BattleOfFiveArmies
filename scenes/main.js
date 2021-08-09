@@ -522,6 +522,118 @@ scene("main", (args = {}) => {
         }
       }
     }
+    function runLongPlayable(o) {
+      o.x = o.pos.x;
+      o.y = o.pos.y;
+      let targets = get("bad");
+      for (var e of targets) {
+        if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
+          if (frameCount % e.rate === 0 && e.attacking) {
+            play(choose(metalHits))
+            o.health -= e.damage * (1 - (e.armor / 100));
+            if (o.health <= 0) {
+              e.targeting = false;
+            }
+          }
+        }
+      }
+
+      if (!o.onTask && !o.selected) {
+        if (targets.some(e => dist(o.x, o.y, e.x, e.y) <= o.range)) {
+          if (!o.targeting) {
+            var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
+            var t = choose(possible);
+            o.target = t;
+            o.targeting = true;
+          }
+        } else {
+          if (frameCount % 100 === 0) {
+            o.target = { x: o.x + rand(-100, 100), y: o.y + rand(-100, 100) };
+            o.targeting = true;
+          }
+        }
+      }
+
+      if (o.targeting) {
+        o.gox = o.target.x;
+        o.goy = o.target.y;
+        o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
+        o.angle = -o.rot;
+        o.moving = true;
+        if (dist(o.x, o.y, o.gox, o.goy) <= o.range - 50) {
+          o.moving = false;
+          o.gox = null;
+          o.goy = null;
+          o.attacking = true;
+        }
+      }
+
+
+      if (cursor.selected && o.x > cursor.x && o.x < cursor.x2 && o.y > cursor.y && o.y < cursor.y2) {
+        o.changeSprite(o.sel);
+        o.idle = false;
+        o.attacking = false;
+        o.selected = true;
+        o.targeting = false;
+        o.target = null;
+        o.moving = false;
+        cursor.hasSelected = true;
+      }
+      if (o.selected && cursor.clicked) {
+        o.gox = cursor.x;
+        o.goy = cursor.y;
+        o.rot = Math.atan2(o.goy - o.y, o.gox - o.x);
+        o.angle = -o.rot;
+        o.moving = true;
+        o.onTask = true;
+        o.selected = false;
+        o.changeSprite(o.seq[0])
+      }
+      if (o.moving) {
+        o.scale = 1 + Math.cos(frameCount / 15) / 50;
+        o.move(Math.cos(-o.angle) * o.speed, Math.sin(-o.angle) * o.speed);
+        if (dist(o.x, o.y, o.gox, o.goy) <= o.attackRange) {
+          o.moving = false;
+          o.gox = null;
+          o.goy = null;
+        }
+      }
+      if (o.attacking) {
+        let bad = get("bad");
+        if (bad.some(e => dist(e.x, e.y, o.x, o.y) <= o.range)) {
+          if (frameCount % o.rate === 0) {
+            play("arrow-0")
+            var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
+            var t = choose(possible);
+            o.target = t;
+            o.targeting = true;
+            add([
+              sprite("arrow"),
+              pos(o.x + (Math.cos(o.rot) * 20), o.y + (Math.sin(o.rot) * 20)),
+              layer("units"),
+              "arrow1",
+              "arrow",
+              {
+                rot: o.rot,
+                fromX: o.x,
+                fromY: o.y
+              }
+            ])
+          }
+          if (frameCount % Math.round(o.rate / o.seq.length) === 0 && !o.selected) {
+            o.spi++;
+            if (o.spi >= o.seq.length) {
+              o.spi = 0;
+            }
+            o.changeSprite(o.seq[o.spi])
+          }
+        } else {
+          o.attacking = false;
+          o.idle = true;
+          o.changeSprite(o.seq[0])
+        }
+      }
+    }
   }
 
 
@@ -529,7 +641,7 @@ scene("main", (args = {}) => {
   {
     addUnit("good", "dwarf", 50, 25)
     addUnit("good", "dwarf", 70, 60)
-    addUnit("good", "elf", 90, 60)
+    addUnit("good", "elf-archer", 90, 60)
     addUnit("good", "elf-archer", 50, 120)
     addUnit("good", "man", 50, 170)
 
@@ -605,10 +717,10 @@ scene("main", (args = {}) => {
     });
 
     action(() => {
-      if (keyIsDown("up")||(upButton.isHovered()&&mouseIsDown())) camY -= 5;
-      if (keyIsDown("down")||(downButton.isHovered()&&mouseIsDown())) camY += 5;
-      if (keyIsDown("left")||(leftButton.isHovered()&&mouseIsDown())) camX -= 5;
-      if (keyIsDown("right")||(rightButton.isHovered()&&mouseIsDown())) camX += 5;
+      if (keyIsDown("up") || (upButton.isHovered() && mouseIsDown())) camY -= 5;
+      if (keyIsDown("down") || (downButton.isHovered() && mouseIsDown())) camY += 5;
+      if (keyIsDown("left") || (leftButton.isHovered() && mouseIsDown())) camX -= 5;
+      if (keyIsDown("right") || (rightButton.isHovered() && mouseIsDown())) camX += 5;
       if (camX < width() / 2) camX = width() / 2;
       if (camY < height() / 2) camY = height() / 2;
       if (camX > 2000 - width() / 2) camX = 2000 - width() / 2;
@@ -681,16 +793,14 @@ scene("main", (args = {}) => {
       });
     });
     pauseButton.clicks(() => {
-      if(gamePaused){
+      if (gamePaused) {
         gamePaused = false;
-        every("unit", (u) => {
-          u.paused = false;
-        })
-      }else{
+        every("unit", (u) => u.paused = false)
+        every("arrow", (u) => u.paused = false)
+      } else {
         gamePaused = true;
-        every("unit", (u) => {
-          u.paused = true;
-        })
+        every("unit", (u) => u.paused = true)
+        every("arrow", (u) => u.paused = true)
       }
     })
   }
