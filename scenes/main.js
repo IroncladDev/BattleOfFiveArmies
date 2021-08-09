@@ -208,6 +208,22 @@ scene("main", (args = {}) => {
     scale(5),
     origin("center")
   ]);
+  let gemIcon = add([
+    sprite("icon-score"),
+    pos(160, height() - 75),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ])
+  let coinIcon = add([
+    sprite("coin"),
+    pos(320, height() - 75),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ])
+  let coins = 0;
+  let gems = 0;
   //functions
   {
     function dist(x, y, x2, y2) {
@@ -693,7 +709,16 @@ scene("main", (args = {}) => {
       destroy(a);
     })
 
-
+    action("item", (p) => {
+      if(p.isClicked()){
+        if(p.is("gem")){
+          gems++;
+        }else if(p.is("coin")){
+          coins++;
+        }
+        destroy(p)
+      }
+    })
 
     cursor.action(() => {
       cursor.pos.x = mousePos().x;
@@ -798,6 +823,25 @@ scene("main", (args = {}) => {
         speed: 0.8,
         detune: 1200
       });
+
+      if(e.is("bad")){
+        let chance = Math.random();
+        if(chance < 0.5&&chance > 0.15){
+          add([
+            sprite("coin"),
+            "item",
+            "coin",
+            pos(e.x,e.y)
+          ])
+        }else if(chance <= 0.15){
+          add([
+            sprite("gem"),
+            "item",
+            "gem",
+            pos(e.x,e.y)
+          ])
+        }
+      }
     });
     pauseButton.clicks(() => {
       if (gamePaused) {
