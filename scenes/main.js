@@ -60,7 +60,7 @@ scene("main", (args = {}) => {
   //vars
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
-  let team = "dwarves";
+  let team = "dwarf";
   let frameCount = 0;
   let cursor = add([
     sprite("cursor0"),
@@ -214,16 +214,45 @@ scene("main", (args = {}) => {
     layer("ui"),
     scale(3),
     origin("center")
-  ])
+  ]);
   let coinIcon = add([
     sprite("coin"),
     pos(320, height() - 75),
     layer("ui"),
     scale(3),
     origin("center")
-  ])
+  ]);
+  let unitIcon = add([
+    sprite("icon-units"),
+    pos(480, height() - 75),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ]);
+  let upgradeIcon = add([
+    sprite("icon-upgrade"),
+    pos(640, height() - 75),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ]);
   let coins = 0;
   let gems = 0;
+  let gemCount = add([
+    text(gems, 25),
+    layer("ui"),
+    pos(190, height() - 85)
+  ])
+  let coinCount = add([
+    text(coins, 25),
+    layer("ui"),
+    pos(190+160, height() - 85)
+  ])
+  let unitCount = add([//work here
+    text(get(team).length, 25),
+    layer("ui"),
+    pos(190+320, height() - 85)
+  ])
   //functions
   {
     function dist(x, y, x2, y2) {
@@ -716,6 +745,8 @@ scene("main", (args = {}) => {
         }else if(p.is("coin")){
           coins++;
         }
+        gemCount.text = gems;
+        coinCount.text = coins;
         destroy(p)
       }
     })
@@ -732,10 +763,9 @@ scene("main", (args = {}) => {
         cursor.y2 = mousePos().y;
       }
       if (mouseIsReleased() && cursor.hasStarted) {
-        if (cursor.x2 !== cursor.x && cursor.y !== cursor.y2) {
+        if (Math.abs(cursor.x-cursor.x2)>2 && Math.abs(cursor.y-cursor.y2)>2) {
           cursor.selected = true;
-        }
-        if (cursor.x2 === cursor.x && cursor.y === cursor.y2) {
+        } else {
           cursor.clicked = true;
         }
         cursor.hasStarted = false;
@@ -757,6 +787,7 @@ scene("main", (args = {}) => {
       if (camX > 2000 - width() / 2) camX = 2000 - width() / 2;
       if (camY > 1150 - height() / 2) camY = 1150 - height() / 2;
 
+      unitCount.text = get(team).length;
 
       camPos(camX, camY);
       frameCount++;
