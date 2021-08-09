@@ -265,6 +265,7 @@ scene("main", (args = {}) => {
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
+            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
             play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
@@ -368,6 +369,7 @@ scene("main", (args = {}) => {
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
+            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
             play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
@@ -441,6 +443,7 @@ scene("main", (args = {}) => {
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
+            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
             play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
@@ -490,6 +493,7 @@ scene("main", (args = {}) => {
         let bad = get(targ);
         if (bad.some(e => dist(e.x, e.y, o.x, o.y) <= o.range)) {
           if (frameCount % o.rate === 0) {
+            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
             play("arrow-0")
             var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
             var t = choose(possible);
@@ -529,6 +533,7 @@ scene("main", (args = {}) => {
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
+            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
             play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
@@ -602,6 +607,7 @@ scene("main", (args = {}) => {
         let bad = get("bad");
         if (bad.some(e => dist(e.x, e.y, o.x, o.y) <= o.range)) {
           if (frameCount % o.rate === 0) {
+            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
             play("arrow-0")
             var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
             var t = choose(possible);
@@ -786,6 +792,7 @@ scene("main", (args = {}) => {
       }
     })
     on("destroy", "unit", (e) => {
+      if(dist(e.x,e.y,camX,camY) <= width()*0.75)
       play("gore-0", {
         volume: 2.0,
         speed: 0.8,
