@@ -178,7 +178,7 @@ scene("main", (args = {}) => {
       rate: 40,
       armor: 15,
       speed: 70,
-      seq: ["ww-attack-0", "ww-attack-1", "ww-attack-2", "ww-attack-3", "ww-attack-4", "ww-attack-3","ww-attack-2","ww-attack-1"]
+      seq: ["ww-attack-0", "ww-attack-1", "ww-attack-2", "ww-attack-3", "ww-attack-4", "ww-attack-3", "ww-attack-2", "ww-attack-1"]
     }
   }
   let gamePaused = false;
@@ -239,13 +239,6 @@ scene("main", (args = {}) => {
     scale(3),
     origin("center")
   ]);
-  let upgradeIcon = add([
-    sprite("icon-upgrade"),
-    pos(640, height() - 75),
-    layer("ui"),
-    scale(3),
-    origin("center")
-  ]);
   let coins = 0;
   let gems = 0;
   let gemCount = add([
@@ -256,12 +249,12 @@ scene("main", (args = {}) => {
   let coinCount = add([
     text(coins, 25),
     layer("ui"),
-    pos(190+160, height() - 85)
+    pos(190 + 160, height() - 85)
   ])
   let unitCount = add([//work here
     text(get(team).length, 25),
     layer("ui"),
-    pos(190+320, height() - 85)
+    pos(190 + 320, height() - 85)
   ])
   //functions
   {
@@ -320,8 +313,8 @@ scene("main", (args = {}) => {
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
-            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
-            play(choose(metalHits))
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+              play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
               e.targeting = false;
@@ -340,13 +333,14 @@ scene("main", (args = {}) => {
             o.targeting = true;
           }
         } else {
-          if (frameCount % 100 === 0 && !o.onTask) {
+          /*if (frameCount+o.x % 100 === 0 && !o.onTask) {
             o.target = { x: o.x + rand(-100, 100), y: o.y + rand(-100, 100) };
             //o.targeting = true;
             o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
             o.angle = -o.rot;
             o.moving = true;
-          }
+          }*/
+          o.moving = false;
         }
       }
 
@@ -424,8 +418,8 @@ scene("main", (args = {}) => {
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
-            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
-            play(choose(metalHits))
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+              play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
               e.targeting = false;
@@ -498,8 +492,8 @@ scene("main", (args = {}) => {
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
-            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
-            play(choose(metalHits))
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+              play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
               e.targeting = false;
@@ -548,8 +542,8 @@ scene("main", (args = {}) => {
         let bad = get(targ);
         if (bad.some(e => dist(e.x, e.y, o.x, o.y) <= o.range)) {
           if (frameCount % o.rate === 0) {
-            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
-            play("arrow-0")
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+              play("arrow-0")
             var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
             var t = choose(possible);
             o.target = t;
@@ -588,8 +582,8 @@ scene("main", (args = {}) => {
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
-            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
-            play(choose(metalHits))
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+              play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
               e.targeting = false;
@@ -662,8 +656,8 @@ scene("main", (args = {}) => {
         let bad = get("bad");
         if (bad.some(e => dist(e.x, e.y, o.x, o.y) <= o.range)) {
           if (frameCount % o.rate === 0) {
-            if(dist(o.x,o.y,camX,camY) <= width()*0.75)
-            play("arrow-0")
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+              play("arrow-0")
             var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
             var t = choose(possible);
             o.target = t;
@@ -695,21 +689,20 @@ scene("main", (args = {}) => {
         }
       }
     }
+    function squad(team,type,x,y,w,h) {
+      for(var i = x; i < x+w*30; i+=30){
+        for(var j = y; j < y+h*30; j+=30){
+          addUnit(team, type, i, j)
+        }
+      }
+    }
   }
 
 
   //add some test units
   {
-    addUnit("good", "dwarf", 50, 25)
-    addUnit("good", "dwarf", 70, 60)
-    addUnit("good", "elf-archer", 90, 60)
-    addUnit("good", "elf-archer", 50, 120)
-    addUnit("good", "man", 50, 170)
-
-    addUnit("bad", "ww", 300, 50)
-    addUnit("bad", "orc-archer", 300, 80)
-    addUnit("bad", "troll", 300, 110)
-    addUnit("bad", "ww", 300, 140)
+    squad("good","dwarf", 100, 100, 4, 4);
+    squad("bad", "orc", 300, 100, 4, 4);
   }
 
 
@@ -750,10 +743,10 @@ scene("main", (args = {}) => {
     })
 
     action("item", (p) => {
-      if(p.isClicked()){
-        if(p.is("gem")){
+      if (p.isClicked()) {
+        if (p.is("gem")) {
           gems++;
-        }else if(p.is("coin")){
+        } else if (p.is("coin")) {
           coins++;
         }
         gemCount.text = gems;
@@ -774,7 +767,7 @@ scene("main", (args = {}) => {
         cursor.y2 = mousePos().y;
       }
       if (mouseIsReleased() && cursor.hasStarted) {
-        if (Math.abs(cursor.x-cursor.x2)>2 && Math.abs(cursor.y-cursor.y2)>2) {
+        if (Math.abs(cursor.x - cursor.x2) > 2 && Math.abs(cursor.y - cursor.y2) > 2) {
           cursor.selected = true;
         } else {
           cursor.clicked = true;
@@ -859,28 +852,28 @@ scene("main", (args = {}) => {
       }
     })
     on("destroy", "unit", (e) => {
-      if(dist(e.x,e.y,camX,camY) <= width()*0.75)
-      play("gore-0", {
-        volume: 2.0,
-        speed: 0.8,
-        detune: 1200
-      });
+      if (dist(e.x, e.y, camX, camY) <= width() * 0.75)
+        play("gore-0", {
+          volume: 2.0,
+          speed: 0.8,
+          detune: 1200
+        });
 
-      if(e.is("bad")){
+      if (e.is("bad")) {
         let chance = Math.random();
-        if(chance < 0.5&&chance > 0.15){
+        if (chance < 0.5 && chance > 0.15) {
           add([
             sprite("coin"),
             "item",
             "coin",
-            pos(e.x,e.y)
+            pos(e.x, e.y)
           ])
-        }else if(chance <= 0.15){
+        } else if (chance <= 0.15) {
           add([
             sprite("gem"),
             "item",
             "gem",
-            pos(e.x,e.y)
+            pos(e.x, e.y)
           ])
         }
       }
