@@ -60,7 +60,7 @@ scene("main", (args = {}) => {
   //vars
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
-  let team = "dwarf";
+  let team = "elf";
   let frameCount = 0;
   let cursor = add([
     sprite("cursor0"),
@@ -93,6 +93,7 @@ scene("main", (args = {}) => {
       rate: 25,
       armor: 15,
       speed: 35,
+      team: "orc",
       seq: ["orc-attack-0", "orc-attack-1", "orc-attack-2", "orc-attack-3", "orc-attack-2", "orc-attack-1"],
     },
     "dwarf": {
@@ -103,6 +104,7 @@ scene("main", (args = {}) => {
       rate: 35,
       armor: 25,
       speed: 25,
+      team: "dwarf",
       seq: ["dwarf-attack-0", "dwarf-attack-1", "dwarf-attack-2", "dwarf-attack-3", "dwarf-attack-2", "dwarf-attack-1"],
       sel: "dwarf-selected"
     },
@@ -114,6 +116,7 @@ scene("main", (args = {}) => {
       rate: 30,
       armor: 20,
       speed: 40,
+      team: "man",
       seq: ["man-attack-0", "man-attack-1", "man-attack-2", "man-attack-3", "man-attack-2", "man-attack-1"],
       sel: "man-selected"
     },
@@ -125,6 +128,7 @@ scene("main", (args = {}) => {
       rate: 20,
       armor: 5,
       speed: 50,
+      team: "elf",
       seq: ["elf-attack-0", "elf-attack-1", "elf-attack-2", "elf-attack-3", "elf-attack-2", "elf-attack-1"],
       sel: "elf-selected"
     },
@@ -133,9 +137,10 @@ scene("main", (args = {}) => {
       damage: 7,
       range: 200,
       attackRange: 25,
-      rate: 40,
-      armor: 5,
-      speed: 50,
+      rate: 50,
+      armor: 0,
+      speed: 60,
+      team: "elf",
       seq: ["elf-archer-0", "elf-archer-1", "elf-archer-2", "elf-archer-3", "elf-archer-4", "elf-archer-5"],
       sel: "elf-archer-selected"
     },
@@ -144,9 +149,10 @@ scene("main", (args = {}) => {
       damage: 7,
       range: 200,
       attackRange: 25,
-      rate: 50,
+      rate: 70,
       armor: 25,
       speed: 40,
+      team: "man",
       seq: ["man-archer-0", "man-archer-1", "man-archer-2", "man-archer-3", "man-archer-4", "man-archer-5"],
       sel: "man-archer-selected"
     },
@@ -155,9 +161,10 @@ scene("main", (args = {}) => {
       damage: 7,
       range: 200,
       attackRange: 25,
-      rate: 50,
+      rate: 60,
       armor: 35,
       speed: 40,
+      team: "orc",
       seq: ["orc-archer-0", "orc-archer-1", "orc-archer-2", "orc-archer-3", "orc-archer-4"]
     },
     "troll": {
@@ -168,6 +175,7 @@ scene("main", (args = {}) => {
       rate: 60,
       armor: 20,
       speed: 40,
+      team: "orc",
       seq: ["troll-attack-0", "troll-attack-1", "troll-attack-2", "troll-attack-3", "troll-attack-2", "troll-attack-1"]
     },
     "ww": {
@@ -178,6 +186,7 @@ scene("main", (args = {}) => {
       rate: 40,
       armor: 15,
       speed: 70,
+      team: "orc",
       seq: ["ww-attack-0", "ww-attack-1", "ww-attack-2", "ww-attack-3", "ww-attack-4", "ww-attack-3", "ww-attack-2", "ww-attack-1"]
     }
   }
@@ -239,6 +248,13 @@ scene("main", (args = {}) => {
     scale(3),
     origin("center")
   ]);
+  let rallyIcon = add([
+    sprite("icon-rally"),
+    pos(480 + 160, height() - 75),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ])
   let coins = 0;
   let gems = 0;
   let gemCount = add([
@@ -264,15 +280,15 @@ scene("main", (args = {}) => {
     function ang(a) {
       return Math.PI / 180 * a;
     }
-    function addUnit(team, race, x, y, rangeType = "meelee") {
-      add([
+    function addUnit(tm, race, x, y, rangeType = "meelee") {
+      let u = add([
         layer("units"),
         body(),
         sprite(unitStats[race].seq[0]),
         pos(x, y),
         "unit",
+        tm,
         race,
-        team,
         rangeType,
         {
           health: unitStats[race].health,
@@ -305,7 +321,7 @@ scene("main", (args = {}) => {
     }
 
     function runPlayable(o) {
-
+      o.use("playable");
       o.x = o.pos.x;
       o.y = o.pos.y;
       o.rot = o.angle;
@@ -576,6 +592,7 @@ scene("main", (args = {}) => {
       }
     }
     function runLongPlayable(o) {
+      o.use("playable");
       o.x = o.pos.x;
       o.y = o.pos.y;
       let targets = get("bad");
@@ -650,6 +667,7 @@ scene("main", (args = {}) => {
           o.moving = false;
           o.gox = null;
           o.goy = null;
+          o.onTask = false;
         }
       }
       if (o.attacking) {
@@ -689,9 +707,9 @@ scene("main", (args = {}) => {
         }
       }
     }
-    function squad(team,type,x,y,w,h) {
-      for(var i = x; i < x+w*30; i+=30){
-        for(var j = y; j < y+h*30; j+=30){
+    function squad(team, type, x, y, w, h) {
+      for (var i = x; i < x + w * 30; i += 30) {
+        for (var j = y; j < y + h * 30; j += 30) {
           addUnit(team, type, i, j)
         }
       }
@@ -701,17 +719,16 @@ scene("main", (args = {}) => {
 
   //add some test units
   {
-    squad("good","dwarf", 100, 100, 4, 4);
-    squad("bad", "orc", 300, 100, 4, 4);
+    squad("good", "elf-archer", 100, 100, 4, 4);
+    squad("bad", "orc-archer", 300, 100, 4, 4);
   }
-
 
   //action running
   {
     action("dwarf", runPlayable);
     action("man", o => runAIUnit(o, "bad"))
     action("elf", o => runAIUnit(o, "bad"))
-    action("elf-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+    action("elf-archer", o => runLongPlayable(o, "bad", "arrow1"))
     action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
     action("orc-archer", o => runLongRangeAI(o, "good", "arrow2"))
     action("orc", o => runAIUnit(o, "good"));
@@ -719,7 +736,7 @@ scene("main", (args = {}) => {
     action("ww", o => runAIUnit(o, "good"));
 
     action("gore", (o) => {
-      wait(25, () => destroy(o));
+      wait(10, () => destroy(o));
     })
 
     action("arrow", (o) => {
@@ -728,13 +745,13 @@ scene("main", (args = {}) => {
     })
 
     collides("arrow1", "bad", (a, u) => {
-      u.health -= 7;
+      u.health -= rand(0,7);
       u.target = { x: a.fromX, y: a.fromY };
       u.targeting = true;
       destroy(a);
     })
     collides("arrow2", "good", (a, u) => {
-      u.health -= 7;
+      u.health -= rand(0,7);
       if (!u.selected) {
         u.target = { x: a.fromX, y: a.fromY };
         u.targeting = true;
@@ -752,6 +769,9 @@ scene("main", (args = {}) => {
         gemCount.text = gems;
         coinCount.text = coins;
         destroy(p)
+      }
+      if(p.exists()){
+        wait(15, () => destroy(p))
       }
     })
 
@@ -790,8 +810,32 @@ scene("main", (args = {}) => {
       if (camY < height() / 2) camY = height() / 2;
       if (camX > 2000 - width() / 2) camX = 2000 - width() / 2;
       if (camY > 1150 - height() / 2) camY = 1150 - height() / 2;
+      cursor.changeSprite("cursor0")
+      gemCount.text = gems;
+      coinCount.text = coins;
 
-      unitCount.text = get(team).length;
+      if (rallyIcon.isHovered()) {
+        if (cursor.clicked&&coins >= 10) {
+          every("playable", (o) => {
+            o.changeSprite(o.sel);
+            o.idle = false;
+            o.attacking = false;
+            o.selected = true;
+            o.targeting = false;
+            o.target = null;
+            o.moving = false;
+            cursor.hasSelected = true;
+          })
+          coins -= 10;
+          cursor.clicked = false;
+        }
+
+        if(coins < 10) {
+          cursor.changeSprite("cursor-no")
+        }
+      }
+
+      unitCount.text = get("playable").length;
 
       camPos(camX, camY);
       frameCount++;
@@ -888,7 +932,8 @@ scene("main", (args = {}) => {
         every("unit", (u) => u.paused = true)
         every("arrow", (u) => u.paused = true)
       }
-    })
+    });
+
   }
 
 });
