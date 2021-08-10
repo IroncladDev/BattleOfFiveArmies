@@ -169,6 +169,16 @@ scene("main", (args = {}) => {
       armor: 20,
       speed: 40,
       seq: ["troll-attack-0", "troll-attack-1", "troll-attack-2", "troll-attack-3", "troll-attack-2", "troll-attack-1"]
+    },
+    "ww": {
+      health: 50,
+      damage: 8,
+      range: 250,
+      attackRange: 30,
+      rate: 40,
+      armor: 15,
+      speed: 70,
+      seq: ["ww-attack-0", "ww-attack-1", "ww-attack-2", "ww-attack-3", "ww-attack-4", "ww-attack-3","ww-attack-2","ww-attack-1"]
     }
   }
   let gamePaused = false;
@@ -696,10 +706,10 @@ scene("main", (args = {}) => {
     addUnit("good", "elf-archer", 50, 120)
     addUnit("good", "man", 50, 170)
 
-    addUnit("bad", "orc", 300, 50)
+    addUnit("bad", "ww", 300, 50)
     addUnit("bad", "orc-archer", 300, 80)
     addUnit("bad", "troll", 300, 110)
-    addUnit("bad", "troll", 300, 140)
+    addUnit("bad", "ww", 300, 140)
   }
 
 
@@ -713,6 +723,7 @@ scene("main", (args = {}) => {
     action("orc-archer", o => runLongRangeAI(o, "good", "arrow2"))
     action("orc", o => runAIUnit(o, "good"));
     action("troll", o => runAIUnit(o, "good"));
+    action("ww", o => runAIUnit(o, "good"));
 
     action("gore", (o) => {
       wait(25, () => destroy(o));
