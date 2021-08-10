@@ -60,7 +60,7 @@ scene("main", (args = {}) => {
   //vars
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
-  let team = "elf";
+  let team = "dwarf";
   let frameCount = 0;
   let cursor = add([
     sprite("cursor0"),
@@ -97,12 +97,12 @@ scene("main", (args = {}) => {
       seq: ["orc-attack-0", "orc-attack-1", "orc-attack-2", "orc-attack-3", "orc-attack-2", "orc-attack-1"],
     },
     "dwarf": {
-      health: 40,
+      health: 50,
       damage: 7,
       range: 100,
-      attackRange: 20,
+      attackRange: 25,
       rate: 35,
-      armor: 25,
+      armor: 30,
       speed: 25,
       team: "dwarf",
       seq: ["dwarf-attack-0", "dwarf-attack-1", "dwarf-attack-2", "dwarf-attack-3", "dwarf-attack-2", "dwarf-attack-1"],
@@ -134,7 +134,7 @@ scene("main", (args = {}) => {
     },
     "elf-archer": {
       health: 20,
-      damage: 7,
+      damage: 2,
       range: 200,
       attackRange: 25,
       rate: 50,
@@ -146,7 +146,7 @@ scene("main", (args = {}) => {
     },
     "man-archer": {
       health: 35,
-      damage: 7,
+      damage: 2,
       range: 200,
       attackRange: 25,
       rate: 70,
@@ -158,7 +158,7 @@ scene("main", (args = {}) => {
     },
     "orc-archer": {
       health: 30,
-      damage: 7,
+      damage: 2,
       range: 200,
       attackRange: 25,
       rate: 60,
@@ -181,11 +181,11 @@ scene("main", (args = {}) => {
     "ww": {
       health: 50,
       damage: 8,
-      range: 250,
+      range: 100,
       attackRange: 30,
       rate: 40,
-      armor: 15,
-      speed: 70,
+      armor: 5,
+      speed: 50,
       team: "orc",
       seq: ["ww-attack-0", "ww-attack-1", "ww-attack-2", "ww-attack-3", "ww-attack-4", "ww-attack-3", "ww-attack-2", "ww-attack-1"]
     }
@@ -277,10 +277,7 @@ scene("main", (args = {}) => {
     function dist(x, y, x2, y2) {
       return Math.sqrt(Math.abs(x2 - x) ** 2 + Math.abs(y2 - y) ** 2);
     }
-    function ang(a) {
-      return Math.PI / 180 * a;
-    }
-    function addUnit(tm, race, x, y, rangeType = "meelee") {
+    function addUnit(tm, race, x, y) {
       let u = add([
         layer("units"),
         body(),
@@ -289,13 +286,13 @@ scene("main", (args = {}) => {
         "unit",
         tm,
         race,
-        rangeType,
         {
           health: unitStats[race].health,
           rot: 0,
+          arot: 0,
           damage: unitStats[race].damage,
           regen: 1,
-          range: unitStats[race].range,
+          range: unitStats[race].range*2,
           attackRange: unitStats[race].attackRange,
           armor: unitStats[race].armor,
           speed: unitStats[race].speed,
@@ -316,7 +313,7 @@ scene("main", (args = {}) => {
           onTask: false,
           sel: unitStats[race].sel
         },
-        origin("center")
+        origin("center"),
       ]);
     }
 
@@ -324,12 +321,13 @@ scene("main", (args = {}) => {
       o.use("playable");
       o.x = o.pos.x;
       o.y = o.pos.y;
-      o.rot = o.angle;
+      o.angle = -o.arot;
+      o.arot += (o.rot-o.arot)/10;
       var targets = get("bad");
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
-            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.5)
               play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
@@ -353,7 +351,7 @@ scene("main", (args = {}) => {
             o.target = { x: o.x + rand(-100, 100), y: o.y + rand(-100, 100) };
             //o.targeting = true;
             o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
-            o.angle = -o.rot;
+            //o.angle = -o.rot;
             o.moving = true;
           }*/
           o.moving = false;
@@ -366,7 +364,7 @@ scene("main", (args = {}) => {
         o.gox = o.target.x;
         o.goy = o.target.y;
         o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
-        o.angle = -o.rot;
+        ////o.angle = -o.rot;
         o.moving = true;
         if (dist(o.x, o.y, o.gox, o.goy) <= o.attackRange) {
           o.moving = false;
@@ -391,7 +389,7 @@ scene("main", (args = {}) => {
         o.gox = cursor.x;
         o.goy = cursor.y;
         o.rot = Math.atan2(o.goy - o.y, o.gox - o.x);
-        o.angle = -o.rot;
+        ////o.angle = -o.rot;
         o.moving = true;
         o.onTask = true;
         o.selected = false;
@@ -431,10 +429,12 @@ scene("main", (args = {}) => {
       o.x = o.pos.x;
       o.y = o.pos.y;
       let targets = get(targ);
+      o.angle = -o.arot;
+      o.arot += (o.rot-o.arot);
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
-            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.5)
               play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
@@ -451,13 +451,13 @@ scene("main", (args = {}) => {
           o.targeting = true;
         }
       } else {
-        if (frameCount % 100 === 0) {
+        /*if (frameCount % 200 === 0) {
           o.target = { x: o.x + rand(-100, 100), y: o.y + rand(-100, 100) };
           o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
-          o.angle = -o.rot;
           o.moving = true;
           //o.targeting = true;
-        }
+        }*/
+        o.moving = false;
       }
 
 
@@ -465,9 +465,8 @@ scene("main", (args = {}) => {
         o.gox = o.target.x;
         o.goy = o.target.y;
         o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
-        o.angle = -o.rot;
         o.moving = true;
-        if (dist(o.x, o.y, o.gox, o.goy) <= o.attackRange && o.targeting) {
+        if (dist(o.x, o.y, o.gox, o.goy) <= o.attackRange) {
           o.moving = false;
           o.gox = null;
           o.goy = null;
@@ -482,6 +481,7 @@ scene("main", (args = {}) => {
           o.moving = false;
           o.gox = null;
           o.goy = null;
+          o.targeting = false;
         }
       }
       if (o.attacking) {
@@ -496,7 +496,7 @@ scene("main", (args = {}) => {
           }
         } else {
           o.attacking = false;
-          o.idle = true;
+          //o.idle = true;
           o.changeSprite(o.seq[0])
         }
       }
@@ -504,11 +504,13 @@ scene("main", (args = {}) => {
     function runLongRangeAI(o, targ, ar) {
       o.x = o.pos.x;
       o.y = o.pos.y;
+      o.angle = -o.arot;
+      o.arot += (o.rot-o.arot)/10;
       let targets = get(targ);
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
-            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.5)
               play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
@@ -535,7 +537,7 @@ scene("main", (args = {}) => {
         o.gox = o.target.x;
         o.goy = o.target.y;
         o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
-        o.angle = -o.rot;
+        //o.angle = -o.rot;
         o.moving = true;
         if (dist(o.x, o.y, o.gox, o.goy) <= o.range - 50) {
           o.moving = false;
@@ -558,7 +560,7 @@ scene("main", (args = {}) => {
         let bad = get(targ);
         if (bad.some(e => dist(e.x, e.y, o.x, o.y) <= o.range)) {
           if (frameCount % o.rate === 0) {
-            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.5)
               play("arrow-0")
             var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
             var t = choose(possible);
@@ -595,11 +597,13 @@ scene("main", (args = {}) => {
       o.use("playable");
       o.x = o.pos.x;
       o.y = o.pos.y;
+      o.angle = -o.arot;
+      o.arot += (o.rot-o.arot)/10;
       let targets = get("bad");
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
-            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.5)
               play(choose(metalHits))
             o.health -= e.damage * (1 - (e.armor / 100));
             if (o.health <= 0) {
@@ -629,7 +633,7 @@ scene("main", (args = {}) => {
         o.gox = o.target.x;
         o.goy = o.target.y;
         o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
-        o.angle = -o.rot;
+        //o.angle = -o.rot;
         o.moving = true;
         if (dist(o.x, o.y, o.gox, o.goy) <= o.range - 50) {
           o.moving = false;
@@ -654,7 +658,7 @@ scene("main", (args = {}) => {
         o.gox = cursor.x;
         o.goy = cursor.y;
         o.rot = Math.atan2(o.goy - o.y, o.gox - o.x);
-        o.angle = -o.rot;
+        //o.angle = -o.rot;
         o.moving = true;
         o.onTask = true;
         o.selected = false;
@@ -674,7 +678,7 @@ scene("main", (args = {}) => {
         let bad = get("bad");
         if (bad.some(e => dist(e.x, e.y, o.x, o.y) <= o.range)) {
           if (frameCount % o.rate === 0) {
-            if (dist(o.x, o.y, camX, camY) <= width() * 0.75)
+            if (dist(o.x, o.y, camX, camY) <= width() * 0.5)
               play("arrow-0")
             var possible = targets.filter(e => dist(o.x, o.y, e.x, e.y) <= o.range);
             var t = choose(possible);
@@ -719,17 +723,31 @@ scene("main", (args = {}) => {
 
   //add some test units
   {
-    squad("good", "elf-archer", 100, 100, 4, 4);
-    squad("bad", "orc-archer", 300, 100, 4, 4);
+    squad("good", "dwarf", 100, 100, 4, 4);
+    squad("bad", "ww", 300, 100, 4, 4);
   }
 
   //action running
   {
-    action("dwarf", runPlayable);
-    action("man", o => runAIUnit(o, "bad"))
-    action("elf", o => runAIUnit(o, "bad"))
-    action("elf-archer", o => runLongPlayable(o, "bad", "arrow1"))
-    action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+    if(team === "dwarf"){
+      action("dwarf", runPlayable);
+      action("man", o => runAIUnit(o, "bad"))
+      action("elf", o => runAIUnit(o, "bad"))
+      action("elf-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+      action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+    } else if(team === "elf"){
+      action("dwarf", o => runAIUnit(o, "good"));
+      action("man", o => runAIUnit(o, "bad"))
+      action("elf", o => runPlayable(o, "bad"))
+      action("elf-archer", o => runLongPlayable(o, "bad", "arrow1"))
+      action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+    } else {
+      action("dwarf", o => runAIUnit(o, "good"));
+      action("man", o => runPlayable)
+      action("elf", o => runAIUnit(o, "bad"))
+      action("elf-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+      action("man-archer", o => runLongPlayable(o, "bad", "arrow1"))
+    }
     action("orc-archer", o => runLongRangeAI(o, "good", "arrow2"))
     action("orc", o => runAIUnit(o, "good"));
     action("troll", o => runAIUnit(o, "good"));
@@ -751,7 +769,11 @@ scene("main", (args = {}) => {
       destroy(a);
     })
     collides("arrow2", "good", (a, u) => {
-      u.health -= rand(0,7);
+      if(!u.is("dwarf")){
+        u.health -= rand(0,7);
+      }else{
+        u.health -= rand(0,3);
+      }
       if (!u.selected) {
         u.target = { x: a.fromX, y: a.fromY };
         u.targeting = true;
@@ -896,7 +918,7 @@ scene("main", (args = {}) => {
       }
     })
     on("destroy", "unit", (e) => {
-      if (dist(e.x, e.y, camX, camY) <= width() * 0.75)
+      if (dist(e.x, e.y, camX, camY) <= width() * 0.5)
         play("gore-0", {
           volume: 2.0,
           speed: 0.8,

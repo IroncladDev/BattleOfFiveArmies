@@ -17,10 +17,14 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      background:black;
     }
 
     canvas {
-      display: block;
+      position:fixed;
+      top:50vh;
+      left:50vw;
+      transform:translate(-50%,-50%);
     }
   </style>
 </head>
@@ -34,7 +38,7 @@
   <script>
 
     kaboom({
-      ...{ "fullscreen": true, "width": 240, "height": 240, "scale": 1, "startScene": "main", "debug": true, "clearColor": null, "version": "0.5.0" },
+      ...{ "fullscreen": false, "width": 1200, "height": 600, "scale": 1, "startScene": "main", "debug": true, "clearColor": null, "version": "0.5.0" },
       global: true,
       plugins: [peditPlugin, asepritePlugin, kbmspritePlugin],
     });
