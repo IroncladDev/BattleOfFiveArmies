@@ -3,20 +3,27 @@ scene("main", (args = {}) => {
   //setup
   {
     add([
+      rect(width(), height()),
+      pos(0,0),
+      color(rgba(0,0,0)),
+      layer("bg")
+    ])
+    add([
       sprite("land"),
       scale(5),
+      layer("back")
     ])
     layers([
+      "bg",
       "back",
       "units",
       "select",
       "ui",
       "cursor",
     ], "obj");
-    camIgnore(["ui"])
+    camIgnore(["ui", "bg"])
     gravity(0);
     volume(0.1)
-
 
     add([
       rect(2000, 10),
@@ -764,8 +771,8 @@ scene("main", (args = {}) => {
 
   //add some test units
   {
-    squad("good", "dwarf", 100, 100, 5, 5);
-    squad("bad", "troll", 300, 100, 4, 4);
+    squad("good", "dwarf", 100, 100, 4, 4);
+    squad("bad", "orc", 300, 100, 4, 4);
   }
 
   //action running
@@ -844,9 +851,9 @@ scene("main", (args = {}) => {
     action("item", (p) => {
       if (p.isClicked()) {
         if (p.is("gem")) {
-          gems++;
+          gems+=Math.floor(1+Math.random() * 2);
         } else if (p.is("coin")) {
-          coins++;
+          coins+=Math.floor(1+Math.random() * 5);
         }
         gemCount.text = gems;
         coinCount.text = coins;
@@ -884,14 +891,14 @@ scene("main", (args = {}) => {
     });
 
     action(() => {
-      if (keyIsDown("up") || (upButton.isHovered() && mouseIsDown())) camY -= 5;
-      if (keyIsDown("down") || (downButton.isHovered() && mouseIsDown())) camY += 5;
-      if (keyIsDown("left") || (leftButton.isHovered() && mouseIsDown())) camX -= 5;
-      if (keyIsDown("right") || (rightButton.isHovered() && mouseIsDown())) camX += 5;
-      if (camX < width() / 2) camX = width() / 2;
-      if (camY < height() / 2) camY = height() / 2;
-      if (camX > 2000 - width() / 2) camX = 2000 - width() / 2;
-      if (camY > 1150 - height() / 2) camY = 1150 - height() / 2;
+      if (keyIsDown("w") || keyIsDown("up") || (upButton.isHovered() && mouseIsDown())) camY -= 5;
+      if (keyIsDown("s") || keyIsDown("down") || (downButton.isHovered() && mouseIsDown())) camY += 5;
+      if (keyIsDown("a") || keyIsDown("left") || (leftButton.isHovered() && mouseIsDown())) camX -= 5;
+      if (keyIsDown("d") || keyIsDown("right") || (rightButton.isHovered() && mouseIsDown())) camX += 5;
+      if (camX < 20) camX = 20;
+      if (camY < 20) camY = 20
+      if (camX > 2000 - 20) camX = 2000 - 20
+      if (camY > 1000 - 20) camY = 1000 - 20
       cursor.changeSprite("cursor0")
       gemCount.text = gems;
       coinCount.text = coins;
@@ -1012,14 +1019,16 @@ scene("main", (args = {}) => {
             sprite("coin"),
             "item",
             "coin",
-            pos(e.x, e.y)
+            pos(e.x, e.y),
+            layer("back")
           ])
         } else if (chance <= 0.15) {
           add([
             sprite("gem"),
             "item",
             "gem",
-            pos(e.x, e.y)
+            pos(e.x, e.y),
+            layer("back")
           ])
         }
       }
