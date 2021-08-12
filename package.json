@@ -1,0 +1,24 @@
+{
+  "name": "kaboom-lotr-game",
+  "version": "0.0.1",
+  "description": "made a game with kaboom.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Conner1115/ReplitKaboomEntry.git"
+  },
+  "keywords": [
+    "game",
+    "kaboomjs",
+    "javascript"
+  ],
+  "author": "leviathanProgramming",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Conner1115/ReplitKaboomEntry/issues"
+  },
+  "homepage": "https://github.com/Conner1115/ReplitKaboomEntry#readme"
+}
