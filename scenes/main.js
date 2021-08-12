@@ -304,6 +304,13 @@ scene("main", (args = {}) => {
     pos(width()/2, height()/2),
     scale(4),
   ])
+  let nextWave = add([
+    sprite("icon-next"),
+    pos(width() - 240 - 100, height() - 75),
+    layer("ui"),
+    scale(5),
+    origin("center")
+  ])
   let coins = 20;
   let gems = 10;
   let gemCount = add([
