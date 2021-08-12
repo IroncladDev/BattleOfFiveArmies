@@ -245,7 +245,7 @@ scene("main", (args = {}) => {
     sprite("icon-pause"),
     pos(width() - 240, height() - 75),
     layer("ui"),
-    scale(5),
+    scale(4),
     origin("center")
   ]);
   let gemIcon = add([
@@ -308,7 +308,7 @@ scene("main", (args = {}) => {
     sprite("icon-next"),
     pos(width() - 240 - 100, height() - 75),
     layer("ui"),
-    scale(5),
+    scale(4),
     origin("center")
   ])
   let coins = 20;
@@ -334,7 +334,7 @@ scene("main", (args = {}) => {
       return Math.sqrt(Math.abs(x2 - x) ** 2 + Math.abs(y2 - y) ** 2);
     }
     function addUnit(tm, race, x, y) {
-      let u = add([
+      add([
         layer("units"),
         body(),
         sprite(unitStats[race].seq[0]),
@@ -796,15 +796,15 @@ scene("main", (args = {}) => {
     } else if(team === "elf"){
       action("dwarf", o => runAIUnit(o, "good"));
       action("man", o => runAIUnit(o, "bad"))
-      action("elf", o => runPlayable(o, "bad"))
+      action("elf", o => runPlayable)
       action("elf-archer", o => runLongPlayable(o, "bad", "arrow1"))
       action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
       action("dwarf-spear", o => runLongRangeAI(o, "bad", "spear"))
       rangedUnit = "elf-archer";
       meeleeUnit = "elf";
-    } else {
+    } else if(team === "man") {
       action("dwarf", o => runAIUnit(o, "good"));
-      action("man", o => runPlayable)
+      action("man", runPlayable)
       action("elf", o => runAIUnit(o, "bad"))
       action("elf-archer", o => runLongRangeAI(o, "bad", "arrow1"))
       action("man-archer", o => runLongPlayable(o, "bad", "arrow1"))
@@ -856,7 +856,7 @@ scene("main", (args = {}) => {
     })
 
     action("item", (p) => {
-      if (p.isClicked()) {
+      if (p.isHovered()) {
         if (p.is("gem")) {
           gems+=Math.floor(1+Math.random() * 2);
         } else if (p.is("coin")) {
@@ -941,6 +941,9 @@ scene("main", (args = {}) => {
           addUnit("good", meeleeUnit, camX, camY);
           coins -= 5;
         }
+        if(coins < 5) {
+          cursor.changeSprite("cursor-no")
+        }
       }
 
       if(rangedIcon.isHovered()){
@@ -948,6 +951,9 @@ scene("main", (args = {}) => {
         if(cursor.clicked&&gems >= 5){
           addUnit("good", rangedUnit, camX, camY);
           gems -= 5;
+        }
+        if(gems < 5) {
+          cursor.changeSprite("cursor-no")
         }
       }
 
@@ -971,20 +977,9 @@ scene("main", (args = {}) => {
         cursor.x2 = mousePos().x;
         cursor.y2 = mousePos().y;
       }
-      if (cursor.selected) {
-        console.log("selected");
-        console.log(cursor.x, cursor.y, cursor.x2, cursor.y2);
-        if (cursor.hasSelected) {
-          console.log("cursor has selected")
-        }
-      }
-      if (cursor.clicked) {
-        console.log("clicked", cursor.x, cursor.y);
-      }
       //keep at bottom of action function
       if (cursor.hasSelected && cursor.clicked) {
         cursor.hasSelected = false;
-        console.log("cursor unselected");
         every("unit", (unit) => unit.selected = false)
       }
       cursor.selected = false;
