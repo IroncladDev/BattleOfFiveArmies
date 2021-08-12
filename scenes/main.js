@@ -61,6 +61,8 @@ scene("main", (args = {}) => {
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
   let team = "dwarf";
+  let rangedUnit = "dwarf-spear";
+  let meeleeUnit = "dwarf";
   let frameCount = 0;
   let cursor = add([
     sprite("cursor0"),
@@ -194,7 +196,7 @@ scene("main", (args = {}) => {
       damage: 7,
       range: 150,
       attackRange: 25,
-      rate: 100,
+      rate: 75,
       armor: 30,
       speed: 20,
       team: "dwarf",
@@ -267,8 +269,29 @@ scene("main", (args = {}) => {
     scale(3),
     origin("center")
   ])
-  let coins = 0;
-  let gems = 0;
+  let meeleeIcon = add([
+    sprite("icon-kills"),
+    pos(480 + 160 + 50, height() - 75),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ])
+  let rangedIcon = add([
+    sprite("icon-ranged"),
+    pos(480 + 160 + 100, height() - 75),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ])
+  let priceTag = add([
+    text("", 20),
+    layer("ui"),
+    origin("center"),
+    pos(480 + 160 + 50, height() - 115)
+
+  ])
+  let coins = 20;
+  let gems = 10;
   let gemCount = add([
     text(gems, 25),
     layer("ui"),
@@ -333,8 +356,7 @@ scene("main", (args = {}) => {
       o.use("playable");
       o.x = o.pos.x;
       o.y = o.pos.y;
-      o.angle = -o.arot;
-      o.arot += (o.rot-o.arot)/10;
+      o.angle = -o.rot;
       var targets = get("bad");
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
@@ -735,7 +757,7 @@ scene("main", (args = {}) => {
 
   //add some test units
   {
-    squad("good", "dwarf-spear", 100, 100, 4, 4);
+    squad("good", "dwarf", 100, 100, 5, 5);
     squad("bad", "troll", 300, 100, 4, 4);
   }
 
@@ -748,6 +770,8 @@ scene("main", (args = {}) => {
       action("elf-archer", o => runLongRangeAI(o, "bad", "arrow1"))
       action("dwarf-spear", o => runLongPlayable(o, "bad", "spear"))
       action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+      rangedUnit = "dwarf-spear";
+      meeleeUnit = "dwarf";
     } else if(team === "elf"){
       action("dwarf", o => runAIUnit(o, "good"));
       action("man", o => runAIUnit(o, "bad"))
@@ -755,6 +779,8 @@ scene("main", (args = {}) => {
       action("elf-archer", o => runLongPlayable(o, "bad", "arrow1"))
       action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
       action("dwarf-spear", o => runLongRangeAI(o, "bad", "spear"))
+      rangedUnit = "elf-archer";
+      meeleeUnit = "elf";
     } else {
       action("dwarf", o => runAIUnit(o, "good"));
       action("man", o => runPlayable)
@@ -762,7 +788,8 @@ scene("main", (args = {}) => {
       action("elf-archer", o => runLongRangeAI(o, "bad", "arrow1"))
       action("man-archer", o => runLongPlayable(o, "bad", "arrow1"))
       action("dwarf-spear", o => runLongRangeAI(o, "bad", "spear"))
-
+      rangedUnit = "man-archer";
+      meeleeUnit = "man";
     }
     action("orc-archer", o => runLongRangeAI(o, "good", "arrow2"))
     action("orc", o => runAIUnit(o, "good"));
@@ -862,7 +889,10 @@ scene("main", (args = {}) => {
       gemCount.text = gems;
       coinCount.text = coins;
 
+      priceTag.text = "";
+
       if (rallyIcon.isHovered()) {
+        priceTag.text = "Rally - $10";
         if (cursor.clicked&&coins >= 10) {
           every("playable", (o) => {
             o.changeSprite(o.sel);
@@ -880,6 +910,22 @@ scene("main", (args = {}) => {
 
         if(coins < 10) {
           cursor.changeSprite("cursor-no")
+        }
+      }
+
+      if(meeleeIcon.isHovered()){
+        priceTag.text = "Meelee Unit - $5"
+        if(cursor.clicked&&coins >= 5){
+          addUnit("good", meeleeUnit, camX, camY);
+          coins -= 5;
+        }
+      }
+
+      if(rangedIcon.isHovered()){
+        priceTag.text = "Ranged Unit - 5 gems";
+        if(cursor.clicked&&gems >= 5){
+          addUnit("good", rangedUnit, camX, camY);
+          gems -= 5;
         }
       }
 
