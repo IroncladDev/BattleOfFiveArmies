@@ -188,6 +188,18 @@ scene("main", (args = {}) => {
       speed: 50,
       team: "orc",
       seq: ["ww-attack-0", "ww-attack-1", "ww-attack-2", "ww-attack-3", "ww-attack-4", "ww-attack-3", "ww-attack-2", "ww-attack-1"]
+    },
+    "dwarf-spear": {
+      health: 50,
+      damage: 7,
+      range: 150,
+      attackRange: 25,
+      rate: 100,
+      armor: 30,
+      speed: 20,
+      team: "dwarf",
+      seq: ["dwarf-spear-0","dwarf-spear-1","dwarf-spear-2","dwarf-spear-3","dwarf-spear-4","dwarf-spear-4","dwarf-spear-2","dwarf-spear-1","dwarf-spear-5"],
+      sel: "dwarf-selected"
     }
   }
   let gamePaused = false;
@@ -723,8 +735,8 @@ scene("main", (args = {}) => {
 
   //add some test units
   {
-    squad("good", "dwarf", 100, 100, 4, 4);
-    squad("bad", "ww", 300, 100, 4, 4);
+    squad("good", "dwarf-spear", 100, 100, 4, 4);
+    squad("bad", "troll", 300, 100, 4, 4);
   }
 
   //action running
@@ -734,6 +746,7 @@ scene("main", (args = {}) => {
       action("man", o => runAIUnit(o, "bad"))
       action("elf", o => runAIUnit(o, "bad"))
       action("elf-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+      action("dwarf-spear", o => runLongPlayable(o, "bad", "spear"))
       action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
     } else if(team === "elf"){
       action("dwarf", o => runAIUnit(o, "good"));
@@ -741,12 +754,15 @@ scene("main", (args = {}) => {
       action("elf", o => runPlayable(o, "bad"))
       action("elf-archer", o => runLongPlayable(o, "bad", "arrow1"))
       action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
+      action("dwarf-spear", o => runLongRangeAI(o, "bad", "spear"))
     } else {
       action("dwarf", o => runAIUnit(o, "good"));
       action("man", o => runPlayable)
       action("elf", o => runAIUnit(o, "bad"))
       action("elf-archer", o => runLongRangeAI(o, "bad", "arrow1"))
       action("man-archer", o => runLongPlayable(o, "bad", "arrow1"))
+      action("dwarf-spear", o => runLongRangeAI(o, "bad", "spear"))
+
     }
     action("orc-archer", o => runLongRangeAI(o, "good", "arrow2"))
     action("orc", o => runAIUnit(o, "good"));
@@ -761,7 +777,17 @@ scene("main", (args = {}) => {
       o.angle = -o.rot;
       o.move(Math.cos(o.rot) * 200, Math.sin(o.rot) * 200);
     })
+    action("spear", (o) => {
+      o.angle = -o.rot;
+      o.move(Math.cos(o.rot) * 200, Math.sin(o.rot) * 200);
+    })
 
+    collides("spear", "bad", (a, u) => {
+      u.health -= rand(5, 10);
+      u.target = { x: a.fromX, y: a.fromY };
+      u.targeting = true;
+      destroy(a);
+    })
     collides("arrow1", "bad", (a, u) => {
       u.health -= rand(0,7);
       u.target = { x: a.fromX, y: a.fromY };
