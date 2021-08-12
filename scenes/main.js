@@ -290,6 +290,13 @@ scene("main", (args = {}) => {
     pos(480 + 160 + 50, height() - 115)
 
   ])
+  let targ = add([
+    sprite("targ-center"),
+    layer("ui"),
+    origin("center"),
+    pos(width()/2, height()/2),
+    scale(4),
+  ])
   let coins = 20;
   let gems = 10;
   let gemCount = add([
@@ -888,6 +895,7 @@ scene("main", (args = {}) => {
       cursor.changeSprite("cursor0")
       gemCount.text = gems;
       coinCount.text = coins;
+
 
       priceTag.text = "";
 
