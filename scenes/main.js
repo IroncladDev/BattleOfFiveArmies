@@ -67,7 +67,7 @@ scene("main", (args = {}) => {
   //vars
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
-  let team = "dwarf";
+  let team = "elf";
   let rangedUnit = "dwarf-spear";
   let meeleeUnit = "dwarf";
   let frameCount = 0;
@@ -87,12 +87,25 @@ scene("main", (args = {}) => {
       isSelecting: false,
     }
   ]);
+  let blackScreen = add([
+    rect(width(), height()),
+    pos(-width(),0),
+    layer("ui"),
+    color(rgba(0,0,0,0.5))
+  ])
   let select = add([
     layer("select"),
     rect(0, 0),
     pos(0, 0),
     color(rgba(1, 1, 1, 0.5)),
   ]);
+  let messageText = add([
+    text("Welcome to the game!\n(Wait Three Seconds)", 30),
+    pos(width()/2, height()/2),
+    origin("center"),
+    layer("ui"),
+    color(rgb(200/255,200/255,200/255))
+  ])
   let unitStats = {
     "orc": {
       health: 25,
@@ -802,7 +815,7 @@ scene("main", (args = {}) => {
     } else if (team === "elf") {
       action("dwarf", o => runAIUnit(o, "good"));
       action("man", o => runAIUnit(o, "bad"))
-      action("elf", o => runPlayable)
+      action("elf", o => runPlayable(o))
       action("elf-archer", o => runLongPlayable(o, "bad", "arrow1"))
       action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
       action("dwarf-spear", o => runLongRangeAI(o, "bad", "spear"))
@@ -827,13 +840,15 @@ scene("main", (args = {}) => {
     //startoff
     () => { },
     () => {
-      squad("bad", "orc", 400, 460, 2, 2)
+      squad("bad", "orc", 1600, 460, 2, 2);
+      return "Welcome to the Game!\nKill those Orcs!"
     },
     () => {
-      squad("bad", "orc", 400, 460, 4, 4)
+      squad("bad", "orc", 1600, 460, 4, 4)
+      return "More Orcs are here!"
     },
     //end
-    () => {}
+    () => { }
   ];
 
 
@@ -883,11 +898,12 @@ scene("main", (args = {}) => {
     })
     pointer.action(() => {
       let enems = get("bad");
-      if(enems.length > 0){
-        pointer.pos.x = width()/2;
-        pointer.pos.y = height()/2;
-        pointer.angle = -(Math.atan2(enems[0].y - camY, enems[0].x - camX));
-      }else{
+      let closest = enems.sort((a, b) => dist(a.x, a.y, camX, camY) - dist(b.x, b.y, camX, camY))[0];
+      if (enems.length > 0) {
+        pointer.pos.x = width() / 2;
+        pointer.pos.y = height() / 2;
+        pointer.angle = -(Math.atan2(closest.y - camY, closest.x - camX));
+      } else {
         pointer.pos.x = -100;
         pointer.pos.y = -100;
       }
@@ -895,7 +911,7 @@ scene("main", (args = {}) => {
     action("item", (p) => {
       if (p.isHovered()) {
         if (p.is("gem")) {
-          gems += Math.floor(1 + Math.random() * 2);
+          gems ++;
         } else if (p.is("coin")) {
           coins += Math.floor(1 + Math.random() * 5);
         }
@@ -947,12 +963,32 @@ scene("main", (args = {}) => {
       gemCount.text = gems;
       coinCount.text = coins;
 
+      if(get("good").length === 0){
+        go("lose");
+      }
+
       if (get("bad").length === 0) {
-          wave++;
-          waves[wave]();
-          if(wave == waves.length - 1){
-            go("win")
-          }
+        wave++;
+        messageText.text = waves[wave]()||"Wave "+(wave);
+        gamePaused = true;
+        every("unit", (u) => u.paused = true)
+        every("arrow", (u) => u.paused = true)
+        blackScreen.pos.x = 0;
+        targ.hidden = true;
+        pointer.hidden = true;
+        messageText.hidden = false;
+        wait(3, () => {
+          gamePaused = false;
+          every("unit", (u) => u.paused = false)
+          every("arrow", (u) => u.paused = false)
+          blackScreen.pos.x = -width();
+          targ.hidden = false;
+          pointer.hidden = false;
+          messageText.hidden = true;
+        })
+        if (wave == waves.length - 1) {
+          go("win")
+        }
       }
 
 
@@ -1114,7 +1150,17 @@ scene("win", (args = {}) => {
 
   add([
     text("You Won", 100),
-    pos(width()/2, height()/2),
+    pos(width() / 2, height() / 2),
+    origin("center")
+  ])
+
+})
+
+scene("lose", (args = {}) => {
+
+  add([
+    text("You lost", 100),
+    pos(width() / 2, height() / 2),
     origin("center")
   ])
 
