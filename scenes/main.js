@@ -4,8 +4,8 @@ scene("main", (args = {}) => {
   {
     add([
       rect(width(), height()),
-      pos(0,0),
-      color(rgba(0,0,0)),
+      pos(0, 0),
+      color(rgba(0, 0, 0)),
       layer("bg")
     ])
     add([
@@ -63,7 +63,7 @@ scene("main", (args = {}) => {
 
 
   }
-
+  let wave = 0;
   //vars
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
@@ -207,12 +207,12 @@ scene("main", (args = {}) => {
       armor: 30,
       speed: 20,
       team: "dwarf",
-      seq: ["dwarf-spear-0","dwarf-spear-1","dwarf-spear-2","dwarf-spear-3","dwarf-spear-4","dwarf-spear-4","dwarf-spear-2","dwarf-spear-1","dwarf-spear-5"],
+      seq: ["dwarf-spear-0", "dwarf-spear-1", "dwarf-spear-2", "dwarf-spear-3", "dwarf-spear-4", "dwarf-spear-4", "dwarf-spear-2", "dwarf-spear-1", "dwarf-spear-5"],
       sel: "dwarf-selected"
     }
   }
   let gamePaused = false;
-  let camX = 0, camY = 0;
+  let camX = 240, camY = 490;
   let upButton = add([
     sprite("icon-up"),
     pos(width() - 100, height() - 125),
@@ -264,7 +264,14 @@ scene("main", (args = {}) => {
   ]);
   let unitIcon = add([
     sprite("icon-units"),
-    pos(480, height() - 75),
+    pos(480, height() - 100),
+    layer("ui"),
+    scale(3),
+    origin("center")
+  ]);
+  let enemyIcon = add([
+    sprite("icon-eye"),
+    pos(480, height() - 50),
     layer("ui"),
     scale(3),
     origin("center")
@@ -301,18 +308,11 @@ scene("main", (args = {}) => {
     sprite("targ-center"),
     layer("ui"),
     origin("center"),
-    pos(width()/2, height()/2),
+    pos(width() / 2, height() / 2),
     scale(4),
   ])
-  let nextWave = add([
-    sprite("icon-next"),
-    pos(width() - 240 - 100, height() - 75),
-    layer("ui"),
-    scale(4),
-    origin("center")
-  ])
-  let coins = 20;
-  let gems = 10;
+  let coins = 50;
+  let gems = 50;
   let gemCount = add([
     text(gems, 25),
     layer("ui"),
@@ -323,10 +323,15 @@ scene("main", (args = {}) => {
     layer("ui"),
     pos(190 + 160, height() - 85)
   ])
-  let unitCount = add([//work here
+  let unitCount = add([
     text(get(team).length, 25),
     layer("ui"),
-    pos(190 + 320, height() - 85)
+    pos(190 + 320, height() - 110)
+  ])
+  let enemyCount = add([
+    text(get("bad").length, 25),
+    layer("ui"),
+    pos(190 + 320, height() - 60)
   ])
   //functions
   {
@@ -348,7 +353,7 @@ scene("main", (args = {}) => {
           arot: 0,
           damage: unitStats[race].damage,
           regen: 1,
-          range: unitStats[race].range*2,
+          range: unitStats[race].range * 2,
           attackRange: unitStats[race].attackRange,
           armor: unitStats[race].armor,
           speed: unitStats[race].speed,
@@ -485,7 +490,7 @@ scene("main", (args = {}) => {
       o.y = o.pos.y;
       let targets = get(targ);
       o.angle = -o.arot;
-      o.arot += (o.rot-o.arot);
+      o.arot += (o.rot - o.arot);
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
           if (frameCount % e.rate === 0 && e.attacking) {
@@ -560,7 +565,7 @@ scene("main", (args = {}) => {
       o.x = o.pos.x;
       o.y = o.pos.y;
       o.angle = -o.arot;
-      o.arot += (o.rot-o.arot)/10;
+      o.arot += (o.rot - o.arot) / 10;
       let targets = get(targ);
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
@@ -653,7 +658,7 @@ scene("main", (args = {}) => {
       o.x = o.pos.x;
       o.y = o.pos.y;
       o.angle = -o.arot;
-      o.arot += (o.rot-o.arot)/10;
+      o.arot += (o.rot - o.arot) / 10;
       let targets = get("bad");
       for (var e of targets) {
         if (dist(e.x, e.y, o.x, o.y) <= e.attackRange) {
@@ -775,16 +780,9 @@ scene("main", (args = {}) => {
     }
   }
 
-
-  //add some test units
+  //run units depending on team
   {
-    squad("good", "dwarf", 100, 100, 4, 4);
-    squad("bad", "orc", 300, 100, 4, 4);
-  }
-
-  //action running
-  {
-    if(team === "dwarf"){
+    if (team === "dwarf") {
       action("dwarf", runPlayable);
       action("man", o => runAIUnit(o, "bad"))
       action("elf", o => runAIUnit(o, "bad"))
@@ -793,7 +791,7 @@ scene("main", (args = {}) => {
       action("man-archer", o => runLongRangeAI(o, "bad", "arrow1"))
       rangedUnit = "dwarf-spear";
       meeleeUnit = "dwarf";
-    } else if(team === "elf"){
+    } else if (team === "elf") {
       action("dwarf", o => runAIUnit(o, "good"));
       action("man", o => runAIUnit(o, "bad"))
       action("elf", o => runPlayable)
@@ -802,7 +800,7 @@ scene("main", (args = {}) => {
       action("dwarf-spear", o => runLongRangeAI(o, "bad", "spear"))
       rangedUnit = "elf-archer";
       meeleeUnit = "elf";
-    } else if(team === "man") {
+    } else if (team === "man") {
       action("dwarf", o => runAIUnit(o, "good"));
       action("man", runPlayable)
       action("elf", o => runAIUnit(o, "bad"))
@@ -812,6 +810,21 @@ scene("main", (args = {}) => {
       rangedUnit = "man-archer";
       meeleeUnit = "man";
     }
+  }
+
+  //waves
+
+  squad("good", meeleeUnit, 200, 440, 4, 4);
+  let waves = [
+    () => { },
+    () => {
+      squad("bad", "orc", 1800, 460, 2, 2)
+    },
+  ];
+
+
+  //action running
+  {
     action("orc-archer", o => runLongRangeAI(o, "good", "arrow2"))
     action("orc", o => runAIUnit(o, "good"));
     action("troll", o => runAIUnit(o, "good"));
@@ -837,16 +850,16 @@ scene("main", (args = {}) => {
       destroy(a);
     })
     collides("arrow1", "bad", (a, u) => {
-      u.health -= rand(0,7);
+      u.health -= rand(0, 7);
       u.target = { x: a.fromX, y: a.fromY };
       u.targeting = true;
       destroy(a);
     })
     collides("arrow2", "good", (a, u) => {
-      if(!u.is("dwarf")){
-        u.health -= rand(0,7);
-      }else{
-        u.health -= rand(0,3);
+      if (!u.is("dwarf")) {
+        u.health -= rand(0, 7);
+      } else {
+        u.health -= rand(0, 3);
       }
       if (!u.selected) {
         u.target = { x: a.fromX, y: a.fromY };
@@ -858,15 +871,15 @@ scene("main", (args = {}) => {
     action("item", (p) => {
       if (p.isHovered()) {
         if (p.is("gem")) {
-          gems+=Math.floor(1+Math.random() * 2);
+          gems += Math.floor(1 + Math.random() * 2);
         } else if (p.is("coin")) {
-          coins+=Math.floor(1+Math.random() * 5);
+          coins += Math.floor(1 + Math.random() * 5);
         }
         gemCount.text = gems;
         coinCount.text = coins;
         destroy(p)
       }
-      if(p.exists()){
+      if (p.exists()) {
         wait(15, () => destroy(p))
       }
     })
@@ -910,12 +923,19 @@ scene("main", (args = {}) => {
       gemCount.text = gems;
       coinCount.text = coins;
 
+      if (get("bad").length === 0) {
+        setTimeout(() => {
+          wave++;
+          waves[wave]();
+        }, 3)
+      }
+
 
       priceTag.text = "";
 
       if (rallyIcon.isHovered()) {
         priceTag.text = "Rally - $10";
-        if (cursor.clicked&&coins >= 10) {
+        if (cursor.clicked && coins >= 10) {
           every("playable", (o) => {
             o.changeSprite(o.sel);
             o.idle = false;
@@ -930,34 +950,35 @@ scene("main", (args = {}) => {
           cursor.clicked = false;
         }
 
-        if(coins < 10) {
+        if (coins < 10) {
           cursor.changeSprite("cursor-no")
         }
       }
 
-      if(meeleeIcon.isHovered()){
+      if (meeleeIcon.isHovered()) {
         priceTag.text = "Meelee Unit - $5"
-        if(cursor.clicked&&coins >= 5){
+        if (cursor.clicked && coins >= 5) {
           addUnit("good", meeleeUnit, camX, camY);
           coins -= 5;
         }
-        if(coins < 5) {
+        if (coins < 5) {
           cursor.changeSprite("cursor-no")
         }
       }
 
-      if(rangedIcon.isHovered()){
+      if (rangedIcon.isHovered()) {
         priceTag.text = "Ranged Unit - 5 gems";
-        if(cursor.clicked&&gems >= 5){
+        if (cursor.clicked && gems >= 5) {
           addUnit("good", rangedUnit, camX, camY);
           gems -= 5;
         }
-        if(gems < 5) {
+        if (gems < 5) {
           cursor.changeSprite("cursor-no")
         }
       }
 
       unitCount.text = get("playable").length;
+      enemyCount.text = get("bad").length;
 
       camPos(camX, camY);
       frameCount++;
