@@ -333,6 +333,14 @@ scene("main", (args = {}) => {
     layer("ui"),
     pos(190 + 320, height() - 60)
   ])
+  let pointer = add([
+    sprite("point"),
+    "point",
+    scale(5),
+    pos(width() / 2, height() / 2),
+    layer("ui"),
+    origin("center"),
+  ])
   //functions
   {
     function dist(x, y, x2, y2) {
@@ -816,10 +824,16 @@ scene("main", (args = {}) => {
 
   squad("good", meeleeUnit, 200, 440, 4, 4);
   let waves = [
+    //startoff
     () => { },
     () => {
-      squad("bad", "orc", 1800, 460, 2, 2)
+      squad("bad", "orc", 400, 460, 2, 2)
     },
+    () => {
+      squad("bad", "orc", 400, 460, 4, 4)
+    },
+    //end
+    () => {}
   ];
 
 
@@ -867,7 +881,17 @@ scene("main", (args = {}) => {
       }
       destroy(a);
     })
-
+    pointer.action(() => {
+      let enems = get("bad");
+      if(enems.length > 0){
+        pointer.pos.x = width()/2;
+        pointer.pos.y = height()/2;
+        pointer.angle = -(Math.atan2(enems[0].y - camY, enems[0].x - camX));
+      }else{
+        pointer.pos.x = -100;
+        pointer.pos.y = -100;
+      }
+    })
     action("item", (p) => {
       if (p.isHovered()) {
         if (p.is("gem")) {
@@ -924,10 +948,11 @@ scene("main", (args = {}) => {
       coinCount.text = coins;
 
       if (get("bad").length === 0) {
-        setTimeout(() => {
           wave++;
           waves[wave]();
-        }, 3)
+          if(wave == waves.length - 1){
+            go("win")
+          }
       }
 
 
@@ -1071,3 +1096,26 @@ scene("main", (args = {}) => {
   }
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+scene("win", (args = {}) => {
+
+  add([
+    text("You Won", 100),
+    pos(width()/2, height()/2),
+    origin("center")
+  ])
+
+})
