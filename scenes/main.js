@@ -1276,5 +1276,44 @@ scene("lose", (args = {}) => {
 
 })
 
+scene("intro", (args = {}) => {
+  let messages = [
+    "",
+    "The Sons of Death are upon us!",
+    "To battle, sons of Durin!",
+    "To battle!!!",
+    "The Hobbit: Battle of Five\nArmies, A LeviathanProgramming\nProduction"
+  ];
+  add([
+    rect(width(), height()),
+    color(rgb(0,0,0)),
+    pos(0,0)
+  ])
+  let frameCount = 0;
+  let ind = 0;
+  let op = 1;
+  let _text = add([
+    text(messages[ind], 40),
+    pos(width()/2, height()/2),
+    origin("center"),
+    color(rgba(1,1,1,op))
+  ])
+  loop(5, () => {
+    if(ind < messages.length-1){
+      play("boom")
+      ind++;
+      _text.text = messages[ind];
+    }
+    else{
+      go("main")
+    }
+  })
+  action(() =>{
+    frameCount++;
+    op = 0.1+Math.sin(frameCount/50)
+    _text.color = rgba(1,1,1,op)
+  })
+})
 
-start("main")
+
+start("intro")
