@@ -1262,7 +1262,11 @@ scene("win", (args = {}) => {
 })
 
 scene("lose", (args = {}) => {
-
+  add([
+    sprite("background-lose"),
+    pos(0,0),
+    scale(width() / 3773, height() / 1995)
+  ])
   add([
     text("You lost", 100),
     pos(width() / 2, height() / 2),
