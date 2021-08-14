@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/Conner1115/ReplitKaboomEntry/issues"
   },
-  "homepage": "https://github.com/Conner1115/ReplitKaboomEntry#readme"
+  "homepage": "https://github.com/Conner1115/ReplitKaboomEntry#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
