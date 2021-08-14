@@ -1412,4 +1412,4 @@ scene("lose", (args = {}) => {
 })
 
 
-start("win")
+start("intro")
