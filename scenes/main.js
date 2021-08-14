@@ -1104,10 +1104,20 @@ scene("main", (args = {}) => {
     action("arrow", (o) => {
       o.angle = -o.rot;
       o.move(Math.cos(o.rot) * 200, Math.sin(o.rot) * 200);
+      wait(5, () => {
+        if(o.exists()){
+          destroy(o);
+        }
+      })
     })
     action("spear", (o) => {
       o.angle = -o.rot;
       o.move(Math.cos(o.rot) * 200, Math.sin(o.rot) * 200);
+      wait(5, () => {
+        if(o.exists()){
+          destroy(o);
+        }
+      })
     })
 
     collides("spear", "bad", (a, u) => {
