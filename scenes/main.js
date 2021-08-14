@@ -1266,12 +1266,15 @@ scene("lose", (args = {}) => {
     sprite("background-lose"),
     pos(0,0),
     scale(width() / 1000, height() / 513)
-    
+
   ])
   add([
-    text("You lost", 100),
+    text("Alas, your army is\nno more. You\nhave failed.", 50),
     pos(width() / 2, height() / 2),
     origin("center")
   ])
 
 })
+
+
+start("main")
