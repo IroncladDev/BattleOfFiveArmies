@@ -47,7 +47,7 @@ scene("choose", (args = {}) => {
   ])
   let stats = add([
     text("", 25),
-    pos(width()/2, height()/2 - 200),
+    pos(width()/2, height()/2 - 150),
     origin("center")
   ]);
   let dwarfSymbol = add([
@@ -75,6 +75,15 @@ scene("choose", (args = {}) => {
   action(() => {
     c.pos.x = mousePos().x;
     c.pos.y = mousePos().y;
+    if(dwarfSymbol.isHovered()){
+      stats.text = "dwarves are the toughest units alive.\nThey have high Armor, Damage, and Health,\nHigh resistence to arrows,\nbut are really slow.";
+    }else if(elfSymbol.isHovered()){
+      stats.text = "elves are swift and can throw dangerous\nattacks.  They have high damage and\nspeed, but their health is very low.";
+    }else if(manSymbol.isHovered()){
+      stats.text = "humans are kind of the balancing point\nbetween men and elves.\nThey have medium stats in almost\neverything.";
+    }else{
+      stats.text = "";
+    }
   })
 })
 
