@@ -1265,7 +1265,8 @@ scene("lose", (args = {}) => {
   add([
     sprite("background-lose"),
     pos(0,0),
-    scale(width() / 3773, height() / 1995)
+    scale(width() / 1000, height() / 513)
+    
   ])
   add([
     text("You lost", 100),
