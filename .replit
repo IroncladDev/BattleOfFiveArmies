@@ -1,2 +1,2 @@
 language = "node"
-start="node index.js"
+run="node index.js"
