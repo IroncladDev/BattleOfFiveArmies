@@ -77,10 +77,22 @@ scene("choose", (args = {}) => {
     c.pos.y = mousePos().y;
     if(dwarfSymbol.isHovered()){
       stats.text = "dwarves are the toughest units alive.\nThey have high Armor, Damage, and Health,\nHigh resistence to arrows,\nbut are really slow.";
+      if(mouseIsDown()){
+        __team = "dwarf";
+        go("main")
+      }
     }else if(elfSymbol.isHovered()){
       stats.text = "elves are swift and can throw dangerous\nattacks.  They have high damage and\nspeed, but their health is very low.";
+      if(mouseIsDown()){
+        __team = "elf";
+        go("main")
+      }
     }else if(manSymbol.isHovered()){
       stats.text = "humans are kind of the balancing point\nbetween men and elves.\nThey have medium stats in almost\neverything.";
+      if(mouseIsDown()){
+        __team = "man";
+        go("main")
+      }
     }else{
       stats.text = "";
     }
@@ -156,7 +168,7 @@ scene("main", (args = {}) => {
   //vars
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
-  let team = "dwarf";
+  let team = __team;
   let rangedUnit = "dwarf-spear";
   let meeleeUnit = "dwarf";
   let frameCount = 0;
@@ -534,13 +546,13 @@ scene("main", (args = {}) => {
         o.gox = o.target.x;
         o.goy = o.target.y;
         o.rot = Math.atan2(o.target.y - o.y, o.target.x - o.x);
-        ////o.angle = -o.rot;
         o.moving = true;
         if (dist(o.x, o.y, o.gox, o.goy) <= o.attackRange) {
           o.moving = false;
           o.gox = null;
           o.goy = null;
           o.attacking = true;
+          o.onTask = false;
         }
       }
 
@@ -587,7 +599,6 @@ scene("main", (args = {}) => {
           }
         } else {
           o.attacking = false;
-          o.idle = true;
           o.changeSprite(o.seq[0])
         }
       }
