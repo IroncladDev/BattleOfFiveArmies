@@ -6,95 +6,128 @@ scene("intro", (args = {}) => {
     "The Sons of Death are upon us!",
     "To battle, sons of Durin!",
     "To battle!!!",
-    "The Battle of Five Armies,\nA LeviathanProgramming\nProduction"
+    "The Battle of Five Armies,\nA game by LeviathanProgramming"
   ];
   add([
     rect(width(), height()),
-    color(rgb(0,0,0)),
-    pos(0,0)
+    color(rgb(0, 0, 0)),
+    pos(0, 0)
   ])
   let frameCount = 0;
   let ind = 0;
   let op = 1;
   let _text = add([
     text(messages[ind], 40),
-    pos(width()/2, height()/2),
+    pos(width() / 2, height() / 2),
     origin("center"),
-    color(rgba(1,1,1,op))
+    color(rgba(1, 1, 1, op))
   ])
   loop(5, () => {
-    if(ind < messages.length-1){
+    if (ind < messages.length - 1) {
       play("boom")
       ind++;
       _text.text = messages[ind];
     }
-    else{
+    else {
       go("choose")
     }
   })
-  action(() =>{
+  action(() => {
     frameCount++;
-    op = 0.1+Math.sin(frameCount/50)
-    _text.color = rgba(1,1,1,op)
+    op = 0.1 + Math.sin(frameCount / 50)
+    _text.color = rgba(1, 1, 1, op)
   })
 })
 
 scene("choose", (args = {}) => {
   add([
     sprite("choose-bg"),
-    pos(0,0),
-    scale(width()/64, height() / 32)
+    pos(0, 0),
+    scale(width() / 64, height() / 32)
   ])
   let stats = add([
-    text("", 25),
-    pos(width()/2, height()/2 - 150),
+    text("Choose your Team", 25),
+    pos(width() / 2, height() / 2 - 150),
     origin("center")
   ]);
   let dwarfSymbol = add([
     sprite("symbol-dwarf"),
     scale(5),
     origin("center"),
-    pos(width() / 2 - 200, height() /2)
+    pos(width() / 2 - 200, height() / 2)
   ])
   let elfSymbol = add([
     sprite("symbol-elf"),
     scale(5),
     origin("center"),
-    pos(width() / 2, height() /2)
+    pos(width() / 2, height() / 2)
   ])
   let manSymbol = add([
     sprite("symbol-man"),
     scale(5),
     origin("center"),
-    pos(width() / 2 + 200, height() /2)
+    pos(width() / 2 + 200, height() / 2)
   ])
   let c = add([
     sprite("cursor0"),
-    pos(mousePos().x,mousePos().y)
+    pos(mousePos().x, mousePos().y)
   ])
   action(() => {
     c.pos.x = mousePos().x;
     c.pos.y = mousePos().y;
-    if(dwarfSymbol.isHovered()){
+    if (dwarfSymbol.isHovered()) {
       stats.text = "dwarves are the toughest units alive.\nThey have high Armor, Damage, and Health,\nHigh resistence to arrows,\nbut are really slow.";
-      if(mouseIsDown()){
+      if (mouseIsReleased()) {
         __team = "dwarf";
-        go("main")
+        go("how")
       }
-    }else if(elfSymbol.isHovered()){
+    } else if (elfSymbol.isHovered()) {
       stats.text = "elves are swift and can throw dangerous\nattacks.  They have high damage and\nspeed, but their health is very low.";
-      if(mouseIsDown()){
+      if (mouseIsReleased()) {
         __team = "elf";
-        go("main")
+        go("how")
       }
-    }else if(manSymbol.isHovered()){
+    } else if (manSymbol.isHovered()) {
       stats.text = "humans are kind of the balancing point\nbetween men and elves.\nThey have medium stats in almost\neverything.";
-      if(mouseIsDown()){
+      if (mouseIsReleased()) {
         __team = "man";
-        go("main")
+        go("how")
       }
-    }else{
-      stats.text = "";
+    } else {
+      stats.text = "Choose your Team";
+    }
+  })
+})
+
+scene("how", (args = {}) => {
+  add([
+    rect(width(), height()),
+    color(rgb(0, 0, 0)),
+    pos(0, 0)
+  ])
+  add([
+    text(`- Click and drag the mouse to select your units
+(only your units will respond.  Other armies
+won't. Click somewhere to make them go there.
+
+- WASD/Arrow Keys to move camera
+- The red pointer near the center points 
+to the closest enemy.
+- Hover over coins/gems to pick them 
+up (use your mouse)
+- Use coins/gems to rally your entire
+army and buy units.
+
+Beat all the waves to win.  If your army size
+is zero, you lose.
+
+Click to Continue`, 25),
+    origin("center"),
+    pos(width() / 2, height() / 2)
+  ])
+  action(() => {
+    if(mouseIsReleased()){
+      go("main")
     }
   })
 })
@@ -190,9 +223,9 @@ scene("main", (args = {}) => {
   ]);
   let blackScreen = add([
     rect(width(), height()),
-    pos(-width(),0),
+    pos(-width(), 0),
     layer("ui"),
-    color(rgba(0,0,0,0.5))
+    color(rgba(0, 0, 0, 0.5))
   ])
   let select = add([
     layer("select"),
@@ -202,10 +235,10 @@ scene("main", (args = {}) => {
   ]);
   let messageText = add([
     text("Welcome to the game!\n(Wait Three Seconds)", 30),
-    pos(width()/2, height()/2),
+    pos(width() / 2, height() / 2),
     origin("center"),
     layer("ui"),
-    color(rgb(200/255,200/255,200/255))
+    color(rgb(200 / 255, 200 / 255, 200 / 255))
   ])
   let unitStats = {
     "orc": {
@@ -953,7 +986,7 @@ scene("main", (args = {}) => {
       return "Orcs to the North and South."
     },
     () => {
-      squad("bad", "orc", 1600, 420, 6,6)
+      squad("bad", "orc", 1600, 420, 6, 6)
       return "Orcs packed in a tight\nformation"
     },
     () => {
@@ -1017,7 +1050,7 @@ scene("main", (args = {}) => {
     () => {
       squad("bad", "troll", 1500, 450, 4, 5);
       squad("bad", "ww", 1600, 450, 2, 5);
-      squad("good", "elf", 1000, 450,2,5)
+      squad("good", "elf", 1000, 450, 2, 5)
       return "Nasty Elvses\n- Gollum"
     },
     () => {
@@ -1168,13 +1201,13 @@ scene("main", (args = {}) => {
       gemCount.text = gems;
       coinCount.text = coins;
 
-      if(get("good").length === 0){
+      if (get("good").length === 0) {
         go("lose");
       }
 
       if (get("bad").length === 0) {
         wave++;
-        messageText.text = waves[wave]()||"Wave "+(wave);
+        messageText.text = waves[wave]() || "Wave " + (wave);
         gamePaused = true;
         every("unit", (u) => u.paused = true)
         every("arrow", (u) => u.paused = true)
@@ -1351,7 +1384,7 @@ scene("win", (args = {}) => {
 scene("lose", (args = {}) => {
   add([
     sprite("background-lose"),
-    pos(0,0),
+    pos(0, 0),
     scale(width() / 1000, height() / 513)
 
   ])
@@ -1364,4 +1397,4 @@ scene("lose", (args = {}) => {
 })
 
 
-start("choose")
+start("intro")
