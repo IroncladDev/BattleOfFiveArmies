@@ -1384,7 +1384,12 @@ scene("main", (args = {}) => {
 scene("win", (args = {}) => {
 
   add([
-    text("You Won", 100),
+    rect(width(), height()),
+    pos(0,0),
+    color(rgb(0,0,0))
+  ])
+  add([
+    text("You Won Absolutely\nNothing! I was too lazy\nto make the win screen\nlook rewarding.  I hope\nyou enjoyed the game!", 50),
     pos(width() / 2, height() / 2),
     origin("center")
   ])
@@ -1407,4 +1412,4 @@ scene("lose", (args = {}) => {
 })
 
 
-start("intro")
+start("win")
