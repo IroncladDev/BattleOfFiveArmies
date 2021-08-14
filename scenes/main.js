@@ -29,7 +29,7 @@ scene("intro", (args = {}) => {
       _text.text = messages[ind];
     }
     else{
-      go("main")
+      go("choose")
     }
   })
   action(() =>{
@@ -40,7 +40,42 @@ scene("intro", (args = {}) => {
 })
 
 scene("choose", (args = {}) => {
-  
+  add([
+    sprite("choose-bg"),
+    pos(0,0),
+    scale(width()/64, height() / 32)
+  ])
+  let stats = add([
+    text("", 25),
+    pos(width()/2, height()/2 - 200),
+    origin("center")
+  ]);
+  let dwarfSymbol = add([
+    sprite("symbol-dwarf"),
+    scale(5),
+    origin("center"),
+    pos(width() / 2 - 200, height() /2)
+  ])
+  let elfSymbol = add([
+    sprite("symbol-elf"),
+    scale(5),
+    origin("center"),
+    pos(width() / 2, height() /2)
+  ])
+  let manSymbol = add([
+    sprite("symbol-man"),
+    scale(5),
+    origin("center"),
+    pos(width() / 2 + 200, height() /2)
+  ])
+  let c = add([
+    sprite("cursor0"),
+    pos(mousePos().x,mousePos().y)
+  ])
+  action(() => {
+    c.pos.x = mousePos().x;
+    c.pos.y = mousePos().y;
+  })
 })
 
 scene("main", (args = {}) => {
@@ -1309,4 +1344,4 @@ scene("lose", (args = {}) => {
 })
 
 
-start("intro")
+start("choose")
