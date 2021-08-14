@@ -847,6 +847,15 @@ scene("main", (args = {}) => {
       squad("bad", "orc", 1600, 460, 4, 4)
       return "More Orcs are here!"
     },
+    () => {
+      squad("bad", "orc", 1600, 260, 3, 3)
+      squad("bad", "orc", 1600, 660, 3, 3)
+      return "Orcs to the North and South."
+    },
+    () => {
+      squad("bad", "orc", 1600, 420, 6,6)
+      return "Orcs packed in a tight\nformation"
+    },
     //end
     () => { }
   ];
