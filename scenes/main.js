@@ -67,7 +67,7 @@ scene("main", (args = {}) => {
   //vars
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
-  let team = "elf";
+  let team = "dwarf";
   let rangedUnit = "dwarf-spear";
   let meeleeUnit = "dwarf";
   let frameCount = 0;
@@ -144,7 +144,7 @@ scene("main", (args = {}) => {
     },
     "elf": {
       health: 20,
-      damage: 7,
+      damage: 6,
       range: 150,
       attackRange: 25,
       rate: 20,
