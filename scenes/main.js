@@ -63,7 +63,7 @@ scene("main", (args = {}) => {
 
 
   }
-  let wave = 0;
+  let wave = 10;
   //vars
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
@@ -856,6 +856,53 @@ scene("main", (args = {}) => {
       squad("bad", "orc", 1600, 420, 6,6)
       return "Orcs packed in a tight\nformation"
     },
+    () => {
+      squad("bad", "orc", 1200, 420, 25, 1)
+      return "Looong";
+    },
+    () => {
+      squad("bad", "orc", 1400, 200, 2, 20)
+      return "Tall";
+    },
+    () => {
+      squad("bad", "orc-archer", 1500, 500, 5, 1)
+      return "Archers";
+    },
+    () => {
+      squad("bad", "orc-archer", 1500, 500, 1, 5)
+      squad("bad", "orc", 1550, 500, 1, 5)
+      squad("bad", "orc-archer", 1600, 500, 1, 5)
+      squad("bad", "orc", 1650, 500, 1, 5)
+      return "Orcs and Archers";
+    },
+    () => {
+      squad("bad", "orc", 1600, 260, 3, 3)
+      squad("bad", "orc-archer", 1600, 660, 3, 3)
+      return "North-South Destruction"
+    },
+    () => {
+      squad("bad", "orc", 20, 20, 3, 3)
+      squad("bad", "orc-archer", 20, 950, 3, 3)
+      squad("bad", "orc", 1950, 20, 3, 3)
+      squad("bad", "orc-archer", 1950, 950, 3, 3)
+      return "Four Corners of the World"
+    },
+    () => {
+      squad("bad", "orc-archer", 1500, 500, 1, 5)
+      squad("bad", "orc", 1550, 500, 1, 5)
+      squad("bad", "troll", 1600, 500, 4, 5)
+      squad("good", "elf", 600, 440, 2, 4);
+      squad("good", "elf-archer", 650, 440, 2, 4);
+      squad("good", "man", 700, 440, 2, 4);
+      squad("good", "man-archer", 750, 440, 2, 4);
+      squad("good", "dwarf", 800, 440, 2, 4);
+      squad("good", "dwarf-spear", 850, 440, 2, 4);
+      return "Reinforcements have arrived...\nfor both armies."
+    },
+    () => {
+      squad("bad", "troll", 1450, 500, 6, 5)
+      return "I think that was all the\nreinforcements :(\noh, trolls."
+    },
     //end
     () => { }
   ];
@@ -894,10 +941,10 @@ scene("main", (args = {}) => {
       destroy(a);
     })
     collides("arrow2", "good", (a, u) => {
-      if (!u.is("dwarf")) {
-        u.health -= rand(0, 7);
+      if (u.is("dwarf")) {
+        u.health -= rand(0, 2);
       } else {
-        u.health -= rand(0, 3);
+        u.health -= rand(0, 7);
       }
       if (!u.selected) {
         u.target = { x: a.fromX, y: a.fromY };
@@ -920,7 +967,7 @@ scene("main", (args = {}) => {
     action("item", (p) => {
       if (p.isHovered()) {
         if (p.is("gem")) {
-          gems ++;
+          gems += Math.floor(1 + Math.random() * 5);
         } else if (p.is("coin")) {
           coins += Math.floor(1 + Math.random() * 5);
         }
