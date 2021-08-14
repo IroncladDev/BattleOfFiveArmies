@@ -63,7 +63,7 @@ scene("main", (args = {}) => {
 
 
   }
-  let wave = 10;
+  let wave = 0;
   //vars
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
@@ -902,6 +902,55 @@ scene("main", (args = {}) => {
     () => {
       squad("bad", "troll", 1450, 500, 6, 5)
       return "I think that was all the\nreinforcements :(\noh, trolls."
+    },
+    () => {
+      squad("bad", "orc", 850, 500, 8, 8)
+      return "*squishes ur reinforcements*"
+    },
+    () => {
+      squad("bad", "ww", 20, 20, 2, 2)
+      squad("bad", "ww", 20, 950, 2, 2)
+      squad("bad", "ww", 1950, 20, 2, 2)
+      squad("bad", "ww", 1950, 950, 2, 2)
+      return "Fast Bois = Warg Riders"
+    },
+    () => {
+      squad("bad", "troll", 1500, 450, 4, 5);
+      squad("bad", "ww", 1600, 450, 2, 5);
+      squad("good", "elf", 1000, 450,2,5)
+      return "Nasty Elvses\n- Gollum"
+    },
+    () => {
+      squad("bad", "warg", 1500, 450, 5, 5)
+      return "Waaaaarrrrggs";
+    },
+    () => {
+      squad("bad", "orc-archer", 1500, 450, 6, 6)
+      return "The eagles are late.\nYou're right.\nThey ain't a-coming in this\ngame cuz I'm lazy to add\nthem. :P";
+    },
+    () => {
+      squad("bad", "orc", 1500, 450, 1, 1)
+      return "Weeinfowcements might have arrived";
+    },
+    () => {
+      squad("bad", "ww", 20, 20, 4, 4)
+      squad("bad", "orc", 20, 950, 4, 4)
+      squad("bad", "orc-archer", 1950, 20, 4, 4)
+      squad("bad", "troll", 1950, 950, 4, 4)
+      return "Okay they didn't.\nAll da bad bois together";
+    },
+    () => {
+      squad("good", "elf", 600, 440, 2, 4);
+      squad("good", "elf-archer", 650, 440, 2, 4);
+      squad("good", "man", 700, 440, 2, 4);
+      squad("good", "man-archer", 750, 440, 2, 4);
+      squad("good", "dwarf", 800, 440, 2, 4);
+      squad("good", "dwarf-spear", 850, 440, 2, 4);
+      squad("bad", "ww", 20, 1500, 1, 40)
+      squad("bad", "orc", 20, 1600, 1, 40)
+      squad("bad", "orc-archer", 1700, 20, 1, 40)
+      squad("bad", "troll", 1800, 950, 1, 40)
+      return "The final assault + Reinforcements";
     },
     //end
     () => { }
