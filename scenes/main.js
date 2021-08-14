@@ -1,3 +1,5 @@
+let __team = ""
+
 scene("intro", (args = {}) => {
   let messages = [
     "",
@@ -35,6 +37,10 @@ scene("intro", (args = {}) => {
     op = 0.1+Math.sin(frameCount/50)
     _text.color = rgba(1,1,1,op)
   })
+})
+
+scene("choose", (args = {}) => {
+  
 })
 
 scene("main", (args = {}) => {
