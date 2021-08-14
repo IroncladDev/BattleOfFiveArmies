@@ -882,9 +882,9 @@ scene("main", (args = {}) => {
     },
     () => {
       squad("bad", "orc", 20, 20, 3, 3)
-      squad("bad", "orc-archer", 20, 950, 3, 3)
-      squad("bad", "orc", 1950, 20, 3, 3)
-      squad("bad", "orc-archer", 1950, 950, 3, 3)
+      squad("bad", "orc-archer", 20, 900, 3, 3)
+      squad("bad", "orc", 1900, 20, 3, 3)
+      squad("bad", "orc-archer", 1900, 900, 3, 3)
       return "Four Corners of the World"
     },
     () => {
@@ -909,9 +909,9 @@ scene("main", (args = {}) => {
     },
     () => {
       squad("bad", "ww", 20, 20, 2, 2)
-      squad("bad", "ww", 20, 950, 2, 2)
-      squad("bad", "ww", 1950, 20, 2, 2)
-      squad("bad", "ww", 1950, 950, 2, 2)
+      squad("bad", "ww", 20, 900, 2, 2)
+      squad("bad", "ww", 1900, 20, 2, 2)
+      squad("bad", "ww", 1900, 990, 2, 2)
       return "Fast Bois = Warg Riders"
     },
     () => {
@@ -934,9 +934,9 @@ scene("main", (args = {}) => {
     },
     () => {
       squad("bad", "ww", 20, 20, 4, 4)
-      squad("bad", "orc", 20, 950, 4, 4)
-      squad("bad", "orc-archer", 1950, 20, 4, 4)
-      squad("bad", "troll", 1950, 950, 4, 4)
+      squad("bad", "orc", 20, 900, 4, 4)
+      squad("bad", "orc-archer", 1900, 20, 4, 4)
+      squad("bad", "troll", 1900, 900, 4, 4)
       return "Okay they didn't.\nAll da bad bois together";
     },
     () => {
@@ -949,7 +949,7 @@ scene("main", (args = {}) => {
       squad("bad", "ww", 20, 1500, 1, 40)
       squad("bad", "orc", 20, 1600, 1, 40)
       squad("bad", "orc-archer", 1700, 20, 1, 40)
-      squad("bad", "troll", 1800, 950, 1, 40)
+      squad("bad", "troll", 1800, 900, 1, 40)
       return "The final assault + Reinforcements";
     },
     //end
