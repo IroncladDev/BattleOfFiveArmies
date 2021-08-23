@@ -109,7 +109,6 @@ scene("how", (args = {}) => {
     text(`- Click and drag the mouse to select your units
 (only your units will respond.  Other armies
 won't. Click somewhere to make them go there.
-
 - WASD/Arrow Keys to move camera
 - The red pointer near the center points 
 to the closest enemy.
@@ -117,10 +116,8 @@ to the closest enemy.
 up (use your mouse)
 - Use coins/gems to rally your entire
 army and buy units.
-
 Beat all the waves to win.  If your army size
 is zero, you lose.
-
 Click to Continue`, 25),
     origin("center"),
     pos(width() / 2, height() / 2)
@@ -201,7 +198,7 @@ scene("main", (args = {}) => {
   //vars
   let metalHits = ["metal-hit-0", "metal-hit-1", "metal-hit-2", "metal-hit-3"]
   let gore = ["gore0", "gore1", "gore2"]
-  let team = __team;
+  let team = __team||"dwarf";
   let rangedUnit = "dwarf-spear";
   let meeleeUnit = "dwarf";
   let frameCount = 0;
@@ -1412,4 +1409,4 @@ scene("lose", (args = {}) => {
 })
 
 
-start("intro")
+start("main")
